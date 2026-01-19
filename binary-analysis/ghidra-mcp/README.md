@@ -1,37 +1,36 @@
-# Ghidra MCP Server
+# Ghidra MCP Server (Headless)
 
-A Model Context Protocol server for [Ghidra](https://ghidra-sre.org/), the NSA's open-source reverse engineering framework.
+A Model Context Protocol server for [Ghidra](https://ghidra-sre.org/), the NSA's open-source reverse engineering framework. This version runs completely headless - no GUI required.
 
-> **Note**: This MCP server wraps [LaurieWired/GhidraMCP](https://github.com/LaurieWired/GhidraMCP).
-
-## Prerequisites
-
-**Ghidra must be installed and running with the GhidraMCP plugin:**
-
-1. Download and install [Ghidra](https://ghidra-sre.org/)
-2. Download the GhidraMCP plugin from [releases](https://github.com/LaurieWired/GhidraMCP/releases)
-3. Install the plugin: File → Install Extensions → Add → select the zip
-4. Restart Ghidra and open a project
+> **Note**: This MCP server wraps [clearbluejar/pyghidra-mcp](https://github.com/clearbluejar/pyghidra-mcp).
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
-| `decompile_function` | Decompile a function to C code |
-| `get_function_info` | Get detailed function information |
-| `list_functions` | List all functions in the binary |
-| `get_xrefs` | Find cross-references to/from an address |
-| `search_strings` | Search for strings in the binary |
-| `rename_function` | Rename a function |
-| `add_comment` | Add a comment at an address |
+| `decompile_function` | Decompile a function to pseudo-C code |
+| `search_symbols_by_name` | Search for symbols by name |
+| `search_code` | Search code using semantic queries (ChromaDB) |
+| `list_project_binaries` | List all binaries in the project |
+| `list_project_binary_metadata` | Get metadata for a binary |
+| `list_exports` | List exported symbols |
+| `list_imports` | List imported symbols |
+| `list_cross_references` | Find cross-references |
+| `search_strings` | Search for strings in binary |
+| `read_bytes` | Read raw bytes at address |
+| `gen_callgraph` | Generate function call graph |
+| `import_binary` | Import a new binary into project |
+| `delete_project_binary` | Remove binary from project |
 
 ## Features
 
-- **Decompilation**: Get C code from binary functions
-- **Function Analysis**: Analyze parameters, local variables, call graphs
+- **Headless Operation**: Runs entirely from CLI, no GUI required
+- **Multi-Binary Analysis**: Analyze entire projects with multiple binaries
+- **Decompilation**: Get pseudo-C code from binary functions
+- **Semantic Search**: Find code using natural language queries via ChromaDB
 - **Cross-References**: Track data and code references
+- **Call Graphs**: Generate function relationship graphs
 - **String Search**: Find embedded strings
-- **Annotation**: Add comments and rename symbols
 
 ## Docker
 
@@ -43,12 +42,20 @@ docker build -t ghidra-mcp .
 
 ### Run
 
-Ensure Ghidra is running with GhidraMCP plugin active, then:
+Mount your binaries directory and specify the target binary:
 
 ```bash
+# Analyze a single binary
 docker run --rm -i \
-  --add-host=host.docker.internal:host-gateway \
-  ghidra-mcp
+  -v "$(pwd):/binaries" \
+  ghidra-mcp \
+  /binaries/target_binary
+
+# Analyze multiple binaries in a project
+docker run --rm -i \
+  -v "/path/to/bins:/binaries" \
+  ghidra-mcp \
+  /binaries/lib1.so /binaries/lib2.so /binaries/main
 ```
 
 ## Claude Desktop Configuration
@@ -62,8 +69,9 @@ Add to your `claude_desktop_config.json`:
       "command": "docker",
       "args": [
         "run", "--rm", "-i",
-        "--add-host=host.docker.internal:host-gateway",
-        "ghidra-mcp"
+        "-v", "/path/to/binaries:/binaries",
+        "ghidra-mcp",
+        "/binaries/target.exe"
       ]
     }
   }
