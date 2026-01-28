@@ -8,15 +8,15 @@
 Production-ready, Dockerized MCP (Model Context Protocol) servers for offensive security tools. Enable AI assistants like Claude to perform security assessments, vulnerability scanning, and binary analysis.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/MCPs-24-brightgreen" alt="24 MCPs"/>
-  <img src="https://img.shields.io/badge/Tools-150+-orange" alt="150+ Tools"/>
+  <img src="https://img.shields.io/badge/MCPs-25-brightgreen" alt="25 MCPs"/>
+  <img src="https://img.shields.io/badge/Tools-153+-orange" alt="153+ Tools"/>
   <img src="https://img.shields.io/badge/Docker-Ready-blue" alt="Docker Ready"/>
 </p>
 
 ## Features
 
-- **24 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, OSINT, Active Directory, and more
-- **100+ Security Tools** accessible via natural language through Claude or other MCP clients
+- **25 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, OSINT, Active Directory, and more
+- **153+ Security Tools** accessible via natural language through Claude or other MCP clients
 - **Production Hardened** - Non-root containers, minimal images, Trivy-scanned
 - **Docker Compose** orchestration for multi-tool workflows
 - **CI/CD Ready** with GitHub Actions for automated builds and security scanning
@@ -77,7 +77,7 @@ Add to your Claude Desktop configuration:
 | [whatweb-mcp](./reconnaissance/whatweb-mcp) | 5 | Web technology fingerprinting and CMS detection |
 | [masscan-mcp](./reconnaissance/masscan-mcp) | 6 | High-speed port scanning for large networks |
 
-### Web Security (5 servers)
+### Web Security (6 servers)
 
 | Server | Tools | Description |
 |--------|-------|-------------|
@@ -85,6 +85,7 @@ Add to your Claude Desktop configuration:
 | [sqlmap-mcp](./web-security/sqlmap-mcp) | 8 | SQL injection detection and exploitation |
 | [nikto-mcp](./web-security/nikto-mcp) | - | Wrapper for [Nikto MCP](https://github.com/nittolese/nikto_mcp) web server scanner |
 | [ffuf-mcp](./web-security/ffuf-mcp) | 9 | Web fuzzing for directories, files, parameters, and virtual hosts |
+| [waybackurls-mcp](./web-security/waybackurls-mcp) | 3 | Fetch historical URLs from Wayback Machine for reconnaissance |
 | [burp-mcp](./web-security/burp-mcp) | - | Wrapper for [official Burp Suite MCP](https://github.com/PortSwigger/mcp-server) |
 
 ### Binary Analysis (6 servers)

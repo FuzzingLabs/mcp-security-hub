@@ -266,6 +266,32 @@ services:
           cpus: '2'
           memory: 1G
 
+  waybackurls-mcp:
+    build:
+      context: ./web-security/waybackurls-mcp
+      dockerfile: Dockerfile
+    image: ghcr.io/fuzzinglabs/waybackurls-mcp:latest
+    container_name: waybackurls-mcp
+    environment:
+      - WAYBACKURLS_OUTPUT_DIR=/app/output
+      - WAYBACKURLS_TIMEOUT=${WAYBACKURLS_TIMEOUT:-300}
+    volumes:
+      - waybackurls-output:/app/output
+    ports:
+      - "3020:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
   # ===========================================================================
   # Exploitation
   # ===========================================================================
@@ -637,4 +663,8 @@ volumes:
   capa-output:
     driver: local
   capa-samples:
+    driver: local
+
+  # Waybackurls
+  waybackurls-output:
     driver: local
