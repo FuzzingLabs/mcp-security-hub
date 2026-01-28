@@ -598,6 +598,127 @@ services:
           cpus: '0.5'
           memory: 256M
 
+  # ===========================================================================
+  # Code Security
+  # ===========================================================================
+  semgrep-mcp:
+    build:
+      context: ./code-security/semgrep-mcp
+      dockerfile: Dockerfile
+    image: semgrep-mcp:latest
+    container_name: semgrep-mcp
+    ports:
+      - "3024:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # ===========================================================================
+  # Additional Reconnaissance
+  # ===========================================================================
+  networksdb-mcp:
+    build:
+      context: ./reconnaissance/networksdb-mcp
+      dockerfile: Dockerfile
+    image: networksdb-mcp:latest
+    container_name: networksdb-mcp
+    environment:
+      - NETWORKSDB_API_KEY=${NETWORKSDB_API_KEY:-}
+    ports:
+      - "3025:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  externalattacker-mcp:
+    build:
+      context: ./reconnaissance/externalattacker-mcp
+      dockerfile: Dockerfile
+    image: externalattacker-mcp:latest
+    container_name: externalattacker-mcp
+    ports:
+      - "3026:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  # ===========================================================================
+  # Additional Cloud Security
+  # ===========================================================================
+  roadrecon-mcp:
+    build:
+      context: ./cloud-security/roadrecon-mcp
+      dockerfile: Dockerfile
+    image: roadrecon-mcp:latest
+    container_name: roadrecon-mcp
+    environment:
+      - ROADRECON_URL=${ROADRECON_URL:-http://localhost:5000}
+    ports:
+      - "3027:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===========================================================================
+  # Meta / Security Tooling
+  # ===========================================================================
+  mcp-scan:
+    build:
+      context: ./meta/mcp-scan
+      dockerfile: Dockerfile
+    image: mcp-scan:latest
+    container_name: mcp-scan
+    ports:
+      - "3028:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
 # =============================================================================
 # Networks
 # =============================================================================

@@ -54,6 +54,16 @@ jobs:
             context: ./exploitation/searchsploit-mcp
           - name: gitleaks-mcp
             context: ./secrets/gitleaks-mcp
+          - name: semgrep-mcp
+            context: ./code-security/semgrep-mcp
+          - name: networksdb-mcp
+            context: ./reconnaissance/networksdb-mcp
+          - name: externalattacker-mcp
+            context: ./reconnaissance/externalattacker-mcp
+          - name: roadrecon-mcp
+            context: ./cloud-security/roadrecon-mcp
+          - name: mcp-scan
+            context: ./meta/mcp-scan
 
     steps:
       - name: Checkout
