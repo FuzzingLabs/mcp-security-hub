@@ -30,7 +30,7 @@ docker run -it --rm -e SHODAN_API_KEY=your_key shodan-mcp
   "mcpServers": {
     "shodan": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "-e", "SHODAN_API_KEY=your_key", "ghcr.io/fuzzinglabs/shodan-mcp:latest"]
+      "args": ["run", "-i", "--rm", "-e", "SHODAN_API_KEY=your_key", "shodan-mcp:latest"]
     }
   }
 }

@@ -3,14 +3,13 @@
 # This workflow:
 # - Builds Docker images for all MCP servers
 # - Runs container structure tests
-# - Pushes to GitHub Container Registry (on main branch)
-# - Creates multi-architecture images (amd64, arm64)
+# - Validates docker-compose configuration
 
-name: Build and Publish
+name: Build
 
 on:
   push:
-    branches: [main, develop]
+    branches: [master, main, develop]
     paths:
       - '**/Dockerfile'
       - '**/docker-compose.yml'
@@ -18,128 +17,57 @@ on:
       - '*/*/package*.json'
       - '*/*/requirements*.txt'
   pull_request:
-    branches: [main]
+    branches: [master, main]
   workflow_dispatch:
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_PREFIX: fuzzinglabs
 
 jobs:
   # ===========================================================================
-  # Detect which MCP servers changed
-  # ===========================================================================
-  detect-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      has_changes: ${{ steps.set-matrix.outputs.has_changes }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Detect changed MCP servers
-        id: set-matrix
-        run: |
-          # Define all MCP servers
-          SERVERS=(
-            "reconnaissance/nmap-mcp"
-            "reconnaissance/shodan-mcp"
-            "reconnaissance/subfinder-mcp"
-            "web-security/nuclei-mcp"
-            "web-security/sqlmap-mcp"
-            "web-security/burp-suite-mcp"
-            "exploitation/metasploit-mcp"
-            "binary-analysis/ghidra-mcp"
-            "binary-analysis/radare2-mcp"
-            "mobile-security/mobsf-mcp"
-            "mobile-security/jadx-mcp"
-          )
-
-          # Check which servers have Dockerfiles and have changed
-          CHANGED_SERVERS=()
-          for server in "${SERVERS[@]}"; do
-            if [ -f "$server/Dockerfile" ]; then
-              # Check if files changed (for PRs/pushes) or build all (workflow_dispatch)
-              if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-                CHANGED_SERVERS+=("$server")
-              elif git diff --name-only HEAD~1 HEAD | grep -q "^$server/"; then
-                CHANGED_SERVERS+=("$server")
-              fi
-            fi
-          done
-
-          # Build matrix JSON
-          if [ ${#CHANGED_SERVERS[@]} -eq 0 ]; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "matrix={\"server\":[]}" >> $GITHUB_OUTPUT
-          else
-            MATRIX=$(printf '%s\n' "${CHANGED_SERVERS[@]}" | jq -R . | jq -s -c '{server: .}')
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-          fi
-
-  # ===========================================================================
-  # Build and test Docker images
+  # Build Docker images
   # ===========================================================================
   build:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
-    permissions:
-      contents: read
-      packages: write
+      matrix:
+        include:
+          - name: nmap-mcp
+            context: ./reconnaissance/nmap-mcp
+          - name: nuclei-mcp
+            context: ./web-security/nuclei-mcp
+          - name: sqlmap-mcp
+            context: ./web-security/sqlmap-mcp
+          - name: binwalk-mcp
+            context: ./binary-analysis/binwalk-mcp
+          - name: yara-mcp
+            context: ./binary-analysis/yara-mcp
+          - name: capa-mcp
+            context: ./binary-analysis/capa-mcp
+          - name: ffuf-mcp
+            context: ./web-security/ffuf-mcp
+          - name: whatweb-mcp
+            context: ./reconnaissance/whatweb-mcp
+          - name: masscan-mcp
+            context: ./reconnaissance/masscan-mcp
+          - name: prowler-mcp
+            context: ./cloud-security/prowler-mcp
+          - name: searchsploit-mcp
+            context: ./exploitation/searchsploit-mcp
+          - name: gitleaks-mcp
+            context: ./secrets/gitleaks-mcp
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Extract image name
-        id: image-name
-        run: |
-          SERVER_PATH="${{ matrix.server }}"
-          IMAGE_NAME=$(basename "$SERVER_PATH")
-          echo "name=$IMAGE_NAME" >> $GITHUB_OUTPUT
-          echo "full_name=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/$IMAGE_NAME" >> $GITHUB_OUTPUT
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.image-name.outputs.full_name }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix=
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-
-      - name: Login to GitHub Container Registry
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
+      - name: Build ${{ matrix.name }}
         uses: docker/build-push-action@v5
         with:
-          context: ./${{ matrix.server }}
-          platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          context: ${{ matrix.context }}
+          push: false
+          tags: ${{ matrix.name }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -166,52 +94,15 @@ jobs:
           pytest tests/ -v --tb=short || true
 
   # ===========================================================================
-  # Build docker-compose for integration testing
+  # Validate docker-compose
   # ===========================================================================
-  integration-test:
-    needs: build
-    if: github.event_name == 'pull_request'
+  validate-compose:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build all services
+      - name: Validate docker-compose.yml
         run: |
-          # Build only services that have Dockerfiles
-          docker-compose config --services | while read service; do
-            SERVICE_PATH=$(docker-compose config | grep -A5 "^  $service:" | grep "context:" | awk '{print $2}' | tr -d './')
-            if [ -f "$SERVICE_PATH/Dockerfile" ]; then
-              docker-compose build "$service" || true
-            fi
-          done
-
-      - name: Run health checks
-        run: |
-          # Start services that were built
-          docker-compose up -d --no-build 2>/dev/null || true
-
-          # Wait for services to be healthy
-          sleep 30
-
-          # Check health status
-          docker-compose ps
-
-          # Cleanup
-          docker-compose down
-
-  # ===========================================================================
-  # Update README badges
-  # ===========================================================================
-  update-status:
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Update build status
-        run: |
-          echo "Build completed successfully"
-          # Future: Update status badges, notify Discord, etc.
+          docker-compose config --quiet
+          echo "docker-compose.yml is valid"

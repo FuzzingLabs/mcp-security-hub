@@ -22,7 +22,7 @@ services:
     build:
       context: ./reconnaissance/nmap-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/nmap-mcp:latest
+    image: nmap-mcp:latest
     container_name: nmap-mcp
     ports:
       - "3001:3000"
@@ -49,7 +49,7 @@ services:
     build:
       context: ./reconnaissance/shodan-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/shodan-mcp:latest
+    image: shodan-mcp:latest
     container_name: shodan-mcp
     environment:
       - SHODAN_API_KEY=${SHODAN_API_KEY:-}
@@ -75,7 +75,7 @@ services:
     build:
       context: ./reconnaissance/pd-tools-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/pd-tools-mcp:latest
+    image: pd-tools-mcp:latest
     container_name: pd-tools-mcp
     ports:
       - "3009:3000"
@@ -99,7 +99,7 @@ services:
     build:
       context: ./reconnaissance/whatweb-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/whatweb-mcp:latest
+    image: whatweb-mcp:latest
     container_name: whatweb-mcp
     environment:
       - WHATWEB_OUTPUT_DIR=/app/output
@@ -125,7 +125,7 @@ services:
     build:
       context: ./reconnaissance/masscan-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/masscan-mcp:latest
+    image: masscan-mcp:latest
     container_name: masscan-mcp
     environment:
       - MASSCAN_OUTPUT_DIR=/app/output
@@ -154,7 +154,7 @@ services:
     build:
       context: ./reconnaissance/zoomeye-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/zoomeye-mcp:latest
+    image: zoomeye-mcp:latest
     container_name: zoomeye-mcp
     environment:
       - ZOOMEYE_API_KEY=${ZOOMEYE_API_KEY:-}
@@ -180,7 +180,7 @@ services:
     build:
       context: ./web-security/nuclei-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/nuclei-mcp:latest
+    image: nuclei-mcp:latest
     container_name: nuclei-mcp
     environment:
       - NUCLEI_RATE_LIMIT=${NUCLEI_RATE_LIMIT:-150}
@@ -214,7 +214,7 @@ services:
     build:
       context: ./web-security/sqlmap-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/sqlmap-mcp:latest
+    image: sqlmap-mcp:latest
     container_name: sqlmap-mcp
     environment:
       - SQLMAP_OUTPUT_DIR=/app/output
@@ -239,7 +239,7 @@ services:
     build:
       context: ./web-security/nikto-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/nikto-mcp:latest
+    image: nikto-mcp:latest
     container_name: nikto-mcp
     environment:
       - NIKTO_OUTPUT_DIR=/app/output
@@ -265,7 +265,7 @@ services:
     build:
       context: ./web-security/ffuf-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/ffuf-mcp:latest
+    image: ffuf-mcp:latest
     container_name: ffuf-mcp
     environment:
       - FFUF_OUTPUT_DIR=/app/output
@@ -293,7 +293,7 @@ services:
     build:
       context: ./web-security/waybackurls-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/waybackurls-mcp:latest
+    image: waybackurls-mcp:latest
     container_name: waybackurls-mcp
     environment:
       - WAYBACKURLS_OUTPUT_DIR=/app/output
@@ -322,7 +322,7 @@ services:
     build:
       context: ./exploitation/searchsploit-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/searchsploit-mcp:latest
+    image: searchsploit-mcp:latest
     container_name: searchsploit-mcp
     environment:
       - SEARCHSPLOIT_OUTPUT_DIR=/app/output
@@ -350,7 +350,7 @@ services:
     build:
       context: ./binary-analysis/ghidra-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/ghidra-mcp:latest
+    image: ghidra-mcp:latest
     container_name: ghidra-mcp
     environment:
       - GHIDRA_INSTALL_DIR=/opt/ghidra
@@ -379,7 +379,7 @@ services:
     build:
       context: ./binary-analysis/radare2-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/radare2-mcp:latest
+    image: radare2-mcp:latest
     container_name: radare2-mcp
     volumes:
       - radare2-samples:/app/samples:ro
@@ -402,7 +402,7 @@ services:
     build:
       context: ./binary-analysis/binwalk-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/binwalk-mcp:latest
+    image: binwalk-mcp:latest
     container_name: binwalk-mcp
     environment:
       - BINWALK_OUTPUT_DIR=/app/output
@@ -429,7 +429,7 @@ services:
     build:
       context: ./binary-analysis/yara-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/yara-mcp:latest
+    image: yara-mcp:latest
     container_name: yara-mcp
     environment:
       - YARA_RULES_DIR=/app/rules
@@ -457,7 +457,7 @@ services:
     build:
       context: ./binary-analysis/capa-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/capa-mcp:latest
+    image: capa-mcp:latest
     container_name: capa-mcp
     environment:
       - CAPA_OUTPUT_DIR=/app/output
@@ -490,7 +490,7 @@ services:
     build:
       context: ./cloud-security/trivy-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/trivy-mcp:latest
+    image: trivy-mcp:latest
     container_name: trivy-mcp
     environment:
       - TRIVY_OUTPUT_DIR=/app/output
@@ -518,7 +518,7 @@ services:
     build:
       context: ./cloud-security/prowler-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/prowler-mcp:latest
+    image: prowler-mcp:latest
     container_name: prowler-mcp
     environment:
       - PROWLER_OUTPUT_DIR=/app/output
@@ -550,7 +550,7 @@ services:
     build:
       context: ./secrets/gitleaks-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/gitleaks-mcp:latest
+    image: gitleaks-mcp:latest
     container_name: gitleaks-mcp
     environment:
       - GITLEAKS_OUTPUT_DIR=/app/output
@@ -579,7 +579,7 @@ services:
     build:
       context: ./threat-intel/otx-mcp
       dockerfile: Dockerfile
-    image: ghcr.io/fuzzinglabs/otx-mcp:latest
+    image: otx-mcp:latest
     container_name: otx-mcp
     environment:
       - OTX_API_KEY=${OTX_API_KEY:-}

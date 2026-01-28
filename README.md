@@ -40,6 +40,8 @@ docker-compose ps
 
 ### Configure Claude Desktop
 
+**Important:** You must build the images first with `docker-compose build` before using them.
+
 Add to your Claude Desktop configuration:
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
@@ -51,15 +53,15 @@ Add to your Claude Desktop configuration:
   "mcpServers": {
     "nmap": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "--cap-add=NET_RAW", "ghcr.io/fuzzinglabs/nmap-mcp:latest"]
+      "args": ["run", "-i", "--rm", "--cap-add=NET_RAW", "nmap-mcp:latest"]
     },
     "nuclei": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "ghcr.io/fuzzinglabs/nuclei-mcp:latest"]
+      "args": ["run", "-i", "--rm", "nuclei-mcp:latest"]
     },
     "radare2": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "-v", "/path/to/binaries:/samples:ro", "ghcr.io/fuzzinglabs/radare2-mcp:latest"]
+      "args": ["run", "-i", "--rm", "-v", "/path/to/binaries:/samples:ro", "radare2-mcp:latest"]
     }
   }
 }
@@ -266,9 +268,9 @@ pytest tests/ -v
 # Build and test all Docker images
 ./scripts/test_builds.sh
 
-# Test MCP protocol
+# Test MCP protocol (after building)
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | \
-  docker run -i --rm ghcr.io/fuzzinglabs/nmap-mcp:latest
+  docker run -i --rm nmap-mcp:latest
 ```
 
 ## Legal & Compliance

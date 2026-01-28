@@ -35,7 +35,7 @@ docker run -it --rm -e OTX_API_KEY=your_key otx-mcp
       "args": [
         "run", "-i", "--rm",
         "-e", "OTX_API_KEY=your_key",
-        "ghcr.io/fuzzinglabs/otx-mcp:latest"
+        "otx-mcp:latest"
       ]
     }
   }

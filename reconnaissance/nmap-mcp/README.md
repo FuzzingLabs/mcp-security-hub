@@ -30,7 +30,7 @@ docker run -it --rm --cap-add=NET_RAW --cap-add=NET_ADMIN nmap-mcp
   "mcpServers": {
     "nmap": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "--cap-add=NET_RAW", "--cap-add=NET_ADMIN", "ghcr.io/fuzzinglabs/nmap-mcp:latest"]
+      "args": ["run", "-i", "--rm", "--cap-add=NET_RAW", "--cap-add=NET_ADMIN", "nmap-mcp:latest"]
     }
   }
 }

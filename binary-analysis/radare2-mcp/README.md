@@ -30,7 +30,7 @@ docker run -it --rm -v /path/to/samples:/home/mcpuser/samples radare2-mcp
       "args": [
         "run", "-i", "--rm",
         "-v", "/path/to/samples:/home/mcpuser/samples:ro",
-        "ghcr.io/fuzzinglabs/radare2-mcp:latest"
+        "radare2-mcp:latest"
       ]
     }
   }

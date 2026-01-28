@@ -42,7 +42,7 @@ docker run -it --rm -e ZOOMEYE_API_KEY=your_key zoomeye-mcp
       "args": [
         "run", "-i", "--rm",
         "-e", "ZOOMEYE_API_KEY=your_key",
-        "ghcr.io/fuzzinglabs/zoomeye-mcp:latest"
+        "zoomeye-mcp:latest"
       ]
     }
   }

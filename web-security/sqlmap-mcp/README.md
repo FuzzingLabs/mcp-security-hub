@@ -29,7 +29,7 @@ docker run -it --rm sqlmap-mcp
   "mcpServers": {
     "sqlmap": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "ghcr.io/fuzzinglabs/sqlmap-mcp:latest"]
+      "args": ["run", "-i", "--rm", "sqlmap-mcp:latest"]
     }
   }
 }

@@ -29,7 +29,7 @@ docker run -it --rm nuclei-mcp
   "mcpServers": {
     "nuclei": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "ghcr.io/fuzzinglabs/nuclei-mcp:latest"]
+      "args": ["run", "-i", "--rm", "nuclei-mcp:latest"]
     }
   }
 }
@@ -45,7 +45,7 @@ docker run -it --rm nuclei-mcp
       "args": [
         "run", "-i", "--rm",
         "-v", "/path/to/templates:/home/mcpuser/nuclei-templates:ro",
-        "ghcr.io/fuzzinglabs/nuclei-mcp:latest"
+        "nuclei-mcp:latest"
       ]
     }
   }

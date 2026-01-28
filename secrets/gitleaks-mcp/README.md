@@ -28,7 +28,7 @@ docker run -it --rm gitleaks-mcp
   "mcpServers": {
     "gitleaks": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "ghcr.io/fuzzinglabs/gitleaks-mcp:latest"]
+      "args": ["run", "-i", "--rm", "gitleaks-mcp:latest"]
     }
   }
 }
@@ -44,7 +44,7 @@ docker run -it --rm gitleaks-mcp
       "args": [
         "run", "-i", "--rm",
         "-v", "/path/to/repos:/repos:ro",
-        "ghcr.io/fuzzinglabs/gitleaks-mcp:latest"
+        "gitleaks-mcp:latest"
       ]
     }
   }
