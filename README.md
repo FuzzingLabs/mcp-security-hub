@@ -8,15 +8,15 @@
 Production-ready, Dockerized MCP (Model Context Protocol) servers for offensive security tools. Enable AI assistants like Claude to perform security assessments, vulnerability scanning, and binary analysis.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/MCPs-25-brightgreen" alt="25 MCPs"/>
-  <img src="https://img.shields.io/badge/Tools-153+-orange" alt="153+ Tools"/>
+  <img src="https://img.shields.io/badge/MCPs-26-brightgreen" alt="26 MCPs"/>
+  <img src="https://img.shields.io/badge/Tools-158+-orange" alt="158+ Tools"/>
   <img src="https://img.shields.io/badge/Docker-Ready-blue" alt="Docker Ready"/>
 </p>
 
 ## Features
 
-- **25 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, OSINT, Active Directory, and more
-- **153+ Security Tools** accessible via natural language through Claude or other MCP clients
+- **26 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, secrets detection, OSINT, Active Directory, and more
+- **158+ Security Tools** accessible via natural language through Claude or other MCP clients
 - **Production Hardened** - Non-root containers, minimal images, Trivy-scanned
 - **Docker Compose** orchestration for multi-tool workflows
 - **CI/CD Ready** with GitHub Actions for automated builds and security scanning
@@ -105,6 +105,12 @@ Add to your Claude Desktop configuration:
 |--------|-------|-------------|
 | [trivy-mcp](./cloud-security/trivy-mcp) | 7 | Container, filesystem, and IaC vulnerability scanning |
 | [prowler-mcp](./cloud-security/prowler-mcp) | 6 | AWS/Azure/GCP security auditing and compliance |
+
+### Secrets Detection (1 server)
+
+| Server | Tools | Description |
+|--------|-------|-------------|
+| [gitleaks-mcp](./secrets/gitleaks-mcp) | 5 | Find secrets and credentials in git repos and files |
 
 ### Exploitation (1 server)
 
@@ -225,6 +231,8 @@ mcp-security-hub/
 ├── cloud-security/
 │   ├── trivy-mcp/          # Container scanning (wrapper)
 │   └── prowler-mcp/        # Cloud auditing
+├── secrets/
+│   └── gitleaks-mcp/       # Secrets detection
 ├── exploitation/
 │   └── searchsploit-mcp/   # Exploit database
 ├── osint/

@@ -520,6 +520,35 @@ services:
           cpus: '2'
           memory: 2G
 
+  # ===========================================================================
+  # Secrets Detection
+  # ===========================================================================
+  gitleaks-mcp:
+    build:
+      context: ./secrets/gitleaks-mcp
+      dockerfile: Dockerfile
+    image: ghcr.io/fuzzinglabs/gitleaks-mcp:latest
+    container_name: gitleaks-mcp
+    environment:
+      - GITLEAKS_OUTPUT_DIR=/app/output
+      - GITLEAKS_TIMEOUT=${GITLEAKS_TIMEOUT:-300}
+    volumes:
+      - gitleaks-output:/app/output
+    ports:
+      - "3021:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
 # =============================================================================
 # Networks
 # =============================================================================
@@ -609,4 +638,8 @@ volumes:
 
   # Waybackurls
   waybackurls-output:
+    driver: local
+
+  # Gitleaks
+  gitleaks-output:
     driver: local
