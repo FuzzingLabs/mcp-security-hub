@@ -8,15 +8,15 @@
 Production-ready, Dockerized MCP (Model Context Protocol) servers for offensive security tools. Enable AI assistants like Claude to perform security assessments, vulnerability scanning, and binary analysis.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/MCPs-26-brightgreen" alt="26 MCPs"/>
-  <img src="https://img.shields.io/badge/Tools-158+-orange" alt="158+ Tools"/>
+  <img src="https://img.shields.io/badge/MCPs-28-brightgreen" alt="28 MCPs"/>
+  <img src="https://img.shields.io/badge/Tools-163+-orange" alt="163+ Tools"/>
   <img src="https://img.shields.io/badge/Docker-Ready-blue" alt="Docker Ready"/>
 </p>
 
 ## Features
 
-- **26 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, secrets detection, OSINT, Active Directory, and more
-- **158+ Security Tools** accessible via natural language through Claude or other MCP clients
+- **28 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, secrets detection, threat intelligence, OSINT, Active Directory, and more
+- **163+ Security Tools** accessible via natural language through Claude or other MCP clients
 - **Production Hardened** - Non-root containers, minimal images, Trivy-scanned
 - **Docker Compose** orchestration for multi-tool workflows
 - **CI/CD Ready** with GitHub Actions for automated builds and security scanning
@@ -67,7 +67,7 @@ Add to your Claude Desktop configuration:
 
 ## Available MCP Servers
 
-### Reconnaissance (5 servers)
+### Reconnaissance (6 servers)
 
 | Server | Tools | Description |
 |--------|-------|-------------|
@@ -76,6 +76,7 @@ Add to your Claude Desktop configuration:
 | [pd-tools-mcp](./reconnaissance/pd-tools-mcp) | - | Wrapper for [ProjectDiscovery tools](https://github.com/AshMartian/mcp-pd-tools) (subfinder, httpx, katana) |
 | [whatweb-mcp](./reconnaissance/whatweb-mcp) | 5 | Web technology fingerprinting and CMS detection |
 | [masscan-mcp](./reconnaissance/masscan-mcp) | 6 | High-speed port scanning for large networks |
+| [zoomeye-mcp](./reconnaissance/zoomeye-mcp) | - | Wrapper for [ZoomEye MCP](https://github.com/zoomeye-ai/mcp_zoomeye) - Cyberspace search engine |
 
 ### Web Security (6 servers)
 
@@ -125,11 +126,12 @@ Add to your Claude Desktop configuration:
 | [maigret-mcp](./osint/maigret-mcp) | - | Wrapper for [mcp-maigret](https://github.com/BurtTheCoder/mcp-maigret) - Username OSINT across 2500+ sites |
 | [dnstwist-mcp](./osint/dnstwist-mcp) | - | Wrapper for [mcp-dnstwist](https://github.com/BurtTheCoder/mcp-dnstwist) - Typosquatting/phishing detection |
 
-### Threat Intelligence (1 server)
+### Threat Intelligence (2 servers)
 
 | Server | Tools | Description |
 |--------|-------|-------------|
 | [virustotal-mcp](./threat-intel/virustotal-mcp) | - | Wrapper for [mcp-virustotal](https://github.com/BurtTheCoder/mcp-virustotal) - Malware analysis and threat intel |
+| [otx-mcp](./threat-intel/otx-mcp) | - | Wrapper for [OTX MCP](https://github.com/mrwadams/otx-mcp) - AlienVault Open Threat Exchange |
 
 ### Active Directory (1 server)
 
@@ -214,7 +216,8 @@ mcp-security-hub/
 │   ├── shodan-mcp/         # Internet device search (wrapper)
 │   ├── pd-tools-mcp/       # ProjectDiscovery tools (wrapper)
 │   ├── whatweb-mcp/        # Web fingerprinting
-│   └── masscan-mcp/        # High-speed scanning
+│   ├── masscan-mcp/        # High-speed scanning
+│   └── zoomeye-mcp/        # Cyberspace search (wrapper)
 ├── web-security/
 │   ├── nuclei-mcp/         # Vulnerability scanning
 │   ├── sqlmap-mcp/         # SQL injection
@@ -239,7 +242,8 @@ mcp-security-hub/
 │   ├── maigret-mcp/        # Username OSINT (wrapper)
 │   └── dnstwist-mcp/       # Typosquatting detection (wrapper)
 ├── threat-intel/
-│   └── virustotal-mcp/     # Malware analysis (wrapper)
+│   ├── virustotal-mcp/     # Malware analysis (wrapper)
+│   └── otx-mcp/            # AlienVault OTX (wrapper)
 ├── active-directory/
 │   └── bloodhound-mcp/     # AD attack paths (wrapper)
 ├── password-cracking/

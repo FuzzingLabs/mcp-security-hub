@@ -150,6 +150,29 @@ services:
           cpus: '2'
           memory: 1G
 
+  zoomeye-mcp:
+    build:
+      context: ./reconnaissance/zoomeye-mcp
+      dockerfile: Dockerfile
+    image: ghcr.io/fuzzinglabs/zoomeye-mcp:latest
+    container_name: zoomeye-mcp
+    environment:
+      - ZOOMEYE_API_KEY=${ZOOMEYE_API_KEY:-}
+    ports:
+      - "3024:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
   # ===========================================================================
   # Web Security
   # ===========================================================================
@@ -548,6 +571,32 @@ services:
         limits:
           cpus: '1'
           memory: 512M
+
+  # ===========================================================================
+  # Threat Intelligence
+  # ===========================================================================
+  otx-mcp:
+    build:
+      context: ./threat-intel/otx-mcp
+      dockerfile: Dockerfile
+    image: ghcr.io/fuzzinglabs/otx-mcp:latest
+    container_name: otx-mcp
+    environment:
+      - OTX_API_KEY=${OTX_API_KEY:-}
+    ports:
+      - "3023:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
 
 # =============================================================================
 # Networks
