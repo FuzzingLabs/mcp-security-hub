@@ -309,7 +309,7 @@ MIT License - See [LICENSE](./LICENSE)
 ---
 
 <p align="center">
-  <strong>Maintained by <a href="https://fuzzing-labs.com">Fuzzing Labs</a></strong>
+  <strong>Maintained by <a href="https://fuzzinglabs.com">FuzzingLabs</a></strong>
   <br>
   <sub>Making AI-powered security testing accessible</sub>
 </p>
