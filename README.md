@@ -8,15 +8,15 @@
 Production-ready, Dockerized MCP (Model Context Protocol) servers for offensive security tools. Enable AI assistants like Claude to perform security assessments, vulnerability scanning, and binary analysis.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/MCPs-28-brightgreen" alt="28 MCPs"/>
-  <img src="https://img.shields.io/badge/Tools-163+-orange" alt="163+ Tools"/>
+  <img src="https://img.shields.io/badge/MCPs-33-brightgreen" alt="33 MCPs"/>
+  <img src="https://img.shields.io/badge/Tools-175+-orange" alt="175+ Tools"/>
   <img src="https://img.shields.io/badge/Docker-Ready-blue" alt="Docker Ready"/>
 </p>
 
 ## Features
 
-- **28 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, secrets detection, threat intelligence, OSINT, Active Directory, and more
-- **163+ Security Tools** accessible via natural language through Claude or other MCP clients
+- **33 MCP Servers** covering reconnaissance, web security, binary analysis, cloud security, code security, secrets detection, threat intelligence, OSINT, Active Directory, and more
+- **175+ Security Tools** accessible via natural language through Claude or other MCP clients
 - **Production Hardened** - Non-root containers, minimal images, Trivy-scanned
 - **Docker Compose** orchestration for multi-tool workflows
 - **CI/CD Ready** with GitHub Actions for automated builds and security scanning
@@ -69,7 +69,7 @@ Add to your Claude Desktop configuration:
 
 ## Available MCP Servers
 
-### Reconnaissance (6 servers)
+### Reconnaissance (8 servers)
 
 | Server | Tools | Description |
 |--------|-------|-------------|
@@ -79,6 +79,8 @@ Add to your Claude Desktop configuration:
 | [whatweb-mcp](./reconnaissance/whatweb-mcp) | 5 | Web technology fingerprinting and CMS detection |
 | [masscan-mcp](./reconnaissance/masscan-mcp) | 6 | High-speed port scanning for large networks |
 | [zoomeye-mcp](./reconnaissance/zoomeye-mcp) | - | Wrapper for [ZoomEye MCP](https://github.com/zoomeye-ai/mcp_zoomeye) - Cyberspace search engine |
+| [networksdb-mcp](./reconnaissance/networksdb-mcp) | 4 | IP/ASN/DNS lookups via [NetworksDB](https://github.com/MorDavid/NetworksDB-MCP) |
+| [externalattacker-mcp](./reconnaissance/externalattacker-mcp) | 6 | Attack surface mapping with [ExternalAttacker](https://github.com/MorDavid/ExternalAttacker-MCP) |
 
 ### Web Security (6 servers)
 
@@ -102,12 +104,13 @@ Add to your Claude Desktop configuration:
 | [ghidra-mcp](./binary-analysis/ghidra-mcp) | - | Wrapper for [pyghidra-mcp](https://github.com/clearbluejar/pyghidra-mcp) - Headless AI-powered reverse engineering |
 | [ida-mcp](./binary-analysis/ida-mcp) | - | Wrapper for [ida-pro-mcp](https://github.com/mrexodia/ida-pro-mcp) - IDA Pro integration |
 
-### Cloud Security (2 servers)
+### Cloud Security (3 servers)
 
 | Server | Tools | Description |
 |--------|-------|-------------|
 | [trivy-mcp](./cloud-security/trivy-mcp) | 7 | Container, filesystem, and IaC vulnerability scanning |
 | [prowler-mcp](./cloud-security/prowler-mcp) | 6 | AWS/Azure/GCP security auditing and compliance |
+| [roadrecon-mcp](./cloud-security/roadrecon-mcp) | 6 | Azure AD enumeration via [RoadRecon](https://github.com/atomicchonk/roadrecon_mcp_server) |
 
 ### Secrets Detection (1 server)
 
@@ -146,6 +149,18 @@ Add to your Claude Desktop configuration:
 | Server | Tools | Description |
 |--------|-------|-------------|
 | [hashcat-mcp](./password-cracking/hashcat-mcp) | - | Wrapper for [hashcat-mcp](https://github.com/MorDavid/hashcat-mcp) - Natural language hash cracking |
+
+### Code Security (1 server)
+
+| Server | Tools | Description |
+|--------|-------|-------------|
+| [semgrep-mcp](./code-security/semgrep-mcp) | 7 | Wrapper for [Semgrep MCP](https://github.com/semgrep/mcp) - Static code analysis with 5000+ rules |
+
+### Meta (1 server)
+
+| Server | Tools | Description |
+|--------|-------|-------------|
+| [mcp-scan](./meta/mcp-scan) | - | Wrapper for [mcp-scan](https://github.com/invariantlabs-ai/mcp-scan) - Scan MCP servers for vulnerabilities |
 
 ## Usage Examples
 
@@ -219,7 +234,9 @@ mcp-security-hub/
 │   ├── pd-tools-mcp/       # ProjectDiscovery tools (wrapper)
 │   ├── whatweb-mcp/        # Web fingerprinting
 │   ├── masscan-mcp/        # High-speed scanning
-│   └── zoomeye-mcp/        # Cyberspace search (wrapper)
+│   ├── zoomeye-mcp/        # Cyberspace search (wrapper)
+│   ├── networksdb-mcp/     # IP/ASN/DNS lookups
+│   └── externalattacker-mcp/ # Attack surface mapping
 ├── web-security/
 │   ├── nuclei-mcp/         # Vulnerability scanning
 │   ├── sqlmap-mcp/         # SQL injection
@@ -235,7 +252,10 @@ mcp-security-hub/
 │   └── ida-mcp/            # IDA Pro (wrapper)
 ├── cloud-security/
 │   ├── trivy-mcp/          # Container scanning (wrapper)
-│   └── prowler-mcp/        # Cloud auditing
+│   ├── prowler-mcp/        # Cloud auditing
+│   └── roadrecon-mcp/      # Azure AD enumeration
+├── code-security/
+│   └── semgrep-mcp/        # Static code analysis (wrapper)
 ├── secrets/
 │   └── gitleaks-mcp/       # Secrets detection
 ├── exploitation/
@@ -250,6 +270,8 @@ mcp-security-hub/
 │   └── bloodhound-mcp/     # AD attack paths (wrapper)
 ├── password-cracking/
 │   └── hashcat-mcp/        # Hash cracking (wrapper)
+├── meta/
+│   └── mcp-scan/           # MCP security scanning
 ├── scripts/
 │   ├── setup.sh            # Quick setup
 │   └── healthcheck.sh      # Health verification
