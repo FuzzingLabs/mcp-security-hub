@@ -75,7 +75,7 @@ Add to your Claude Desktop configuration:
 |--------|-------|-------------|
 | [nmap-mcp](./reconnaissance/nmap-mcp) | 8 | Port scanning, service detection, OS fingerprinting, NSE scripts |
 | [shodan-mcp](./reconnaissance/shodan-mcp) | - | Wrapper for [official Shodan MCP](https://github.com/BurtTheCoder/mcp-shodan) |
-| [pd-tools-mcp](./reconnaissance/pd-tools-mcp) | - | Wrapper for [ProjectDiscovery tools](https://github.com/AshMartian/mcp-pd-tools) (subfinder, httpx, katana) |
+| [pd-tools-mcp](./reconnaissance/pd-tools-mcp) | - | Wrapper for [ProjectDiscovery tools](https://github.com/intelligent-ears/pd-tools-mcp) (subfinder, httpx, katana) |
 | [whatweb-mcp](./reconnaissance/whatweb-mcp) | 5 | Web technology fingerprinting and CMS detection |
 | [masscan-mcp](./reconnaissance/masscan-mcp) | 6 | High-speed port scanning for large networks |
 | [zoomeye-mcp](./reconnaissance/zoomeye-mcp) | - | Wrapper for [ZoomEye MCP](https://github.com/zoomeye-ai/mcp_zoomeye) - Cyberspace search engine |
@@ -86,7 +86,7 @@ Add to your Claude Desktop configuration:
 |--------|-------|-------------|
 | [nuclei-mcp](./web-security/nuclei-mcp) | 7 | Template-based vulnerability scanning with 8000+ templates |
 | [sqlmap-mcp](./web-security/sqlmap-mcp) | 8 | SQL injection detection and exploitation |
-| [nikto-mcp](./web-security/nikto-mcp) | - | Wrapper for [Nikto MCP](https://github.com/nittolese/nikto_mcp) web server scanner |
+| [nikto-mcp](./web-security/nikto-mcp) | - | Wrapper for [Nikto MCP](https://github.com/weldpua2008/nikto-mcp) web server scanner |
 | [ffuf-mcp](./web-security/ffuf-mcp) | 9 | Web fuzzing for directories, files, parameters, and virtual hosts |
 | [waybackurls-mcp](./web-security/waybackurls-mcp) | 3 | Fetch historical URLs from Wayback Machine for reconnaissance |
 | [burp-mcp](./web-security/burp-mcp) | - | Wrapper for [official Burp Suite MCP](https://github.com/PortSwigger/mcp-server) |
