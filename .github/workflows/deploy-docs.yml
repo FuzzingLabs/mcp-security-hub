@@ -1,0 +1,66 @@
+# Deploy Documentation Site to GitHub Pages
+#
+# This workflow generates a static documentation site from the repository
+# and deploys it to GitHub Pages.
+
+name: Deploy Docs
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'README.md'
+      - 'docker-compose.yml'
+      - '*/*/README.md'
+      - 'scripts/generate_docs.py'
+      - 'scripts/templates/**'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:
+
+# Sets permissions for GITHUB_TOKEN
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml jinja2
+
+      - name: Generate documentation
+        run: python scripts/generate_docs.py
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

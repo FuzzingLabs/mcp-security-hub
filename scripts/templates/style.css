@@ -1,0 +1,102 @@
+/* MCP Security Hub - Custom Styles */
+
+:root {
+    --transition-speed: 0.2s;
+}
+
+/* Cards */
+.card {
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Category filter buttons */
+#categoryFilters .btn {
+    transition: all var(--transition-speed);
+}
+
+#categoryFilters .btn:hover,
+#categoryFilters .btn.active {
+    background-color: var(--cat-color, var(--bs-primary));
+    border-color: var(--cat-color, var(--bs-primary));
+    color: white;
+}
+
+#categoryFilters .btn.active .badge {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+/* Search input */
+#searchInput:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Code badges */
+code.badge {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.75em;
+}
+
+/* Server cards hiding */
+.server-card.hidden {
+    display: none !important;
+}
+
+.category-section.hidden {
+    display: none !important;
+}
+
+/* Copy button feedback */
+.copy-btn.copied {
+    background-color: var(--bs-success) !important;
+    border-color: var(--bs-success) !important;
+    color: white !important;
+}
+
+/* Sticky header shadow */
+.sticky-top {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .display-5 {
+        font-size: 1.75rem;
+    }
+
+    .display-6 {
+        font-size: 1.25rem;
+    }
+
+    #categoryFilters {
+        max-height: 150px;
+        overflow-y: auto;
+    }
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Link styles */
+a {
+    transition: color var(--transition-speed);
+}
+
+/* Badge animations */
+.badge {
+    transition: all var(--transition-speed);
+}
+
+/* Toast styling */
+.toast {
+    --bs-toast-bg: transparent;
+    border: none;
+}

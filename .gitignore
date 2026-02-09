@@ -8,3 +8,6 @@ dist/
 build/
 .env
 *.log
+
+# Generated documentation (auto-built by GitHub Actions)
+docs/
