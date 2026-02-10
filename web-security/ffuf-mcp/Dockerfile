@@ -23,8 +23,10 @@ ARG FFUF_VERSION=2.1.0
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; fi && \
     if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
-    curl -sL "https://github.com/ffuf/ffuf/releases/download/v${FFUF_VERSION}/ffuf_${FFUF_VERSION}_linux_${ARCH}.tar.gz" | tar -xzf - -C /usr/local/bin ffuf && \
-    chmod +x /usr/local/bin/ffuf
+    curl -fsSL "https://github.com/ffuf/ffuf/releases/download/v${FFUF_VERSION}/ffuf_${FFUF_VERSION}_linux_${ARCH}.tar.gz" -o /tmp/ffuf.tar.gz && \
+    tar -xzf /tmp/ffuf.tar.gz -C /usr/local/bin ffuf && \
+    chmod +x /usr/local/bin/ffuf && \
+    rm /tmp/ffuf.tar.gz
 
 # Verify ffuf installation
 RUN ffuf -V

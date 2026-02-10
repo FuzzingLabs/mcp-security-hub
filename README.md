@@ -38,11 +38,11 @@ docker-compose up nmap-mcp nuclei-mcp -d
 docker-compose ps
 ```
 
-### Configure Claude Desktop
+### Configure Claude Desktop / Claude Code
 
 **Important:** You must build the images first with `docker-compose build` before using them.
 
-Add to your Claude Desktop configuration:
+Copy the example config to your Claude Desktop configuration:
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
@@ -59,6 +59,10 @@ Add to your Claude Desktop configuration:
       "command": "docker",
       "args": ["run", "-i", "--rm", "nuclei-mcp:latest"]
     },
+    "gitleaks": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-v", "/path/to/repos:/app/target:ro", "gitleaks-mcp:latest"]
+    },
     "radare2": {
       "command": "docker",
       "args": ["run", "-i", "--rm", "-v", "/path/to/binaries:/samples:ro", "radare2-mcp:latest"]
@@ -66,6 +70,8 @@ Add to your Claude Desktop configuration:
   }
 }
 ```
+
+For project-level config, copy `.mcp.json` to your project root. See [examples/](./examples/) for full configuration templates with all MCPs and volume mount patterns.
 
 ## Available MCP Servers
 

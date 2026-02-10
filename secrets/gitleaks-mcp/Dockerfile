@@ -19,12 +19,14 @@ RUN apk add --no-cache \
     && rm -rf /var/cache/apk/*
 
 # Install Gitleaks from releases
-ARG GITLEAKS_VERSION=8.21.2
+ARG GITLEAKS_VERSION=8.30.0
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; fi && \
     if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
-    curl -sL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_${ARCH}.tar.gz" | tar xz -C /usr/local/bin gitleaks && \
-    chmod +x /usr/local/bin/gitleaks
+    curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_${ARCH}.tar.gz" -o /tmp/gitleaks.tar.gz && \
+    tar -xzf /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks && \
+    chmod +x /usr/local/bin/gitleaks && \
+    rm /tmp/gitleaks.tar.gz
 
 # Verify gitleaks installation
 RUN gitleaks version

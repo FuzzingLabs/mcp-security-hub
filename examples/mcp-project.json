@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/mcp-project.schema.json",
+  "_comment": "Copy this file to your project root as .mcp.json",
+
+  "mcpServers": {
+    "gitleaks": {
+      "_description": "Scan current project for secrets",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", ".:/app/target:ro",
+        "gitleaks-mcp:latest"
+      ]
+    },
+    "semgrep": {
+      "_description": "Static code analysis on current project",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", ".:/app/target:ro",
+        "semgrep-mcp:latest"
+      ]
+    },
+    "trivy": {
+      "_description": "Vulnerability scanning for code and dependencies",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", ".:/app/target:ro",
+        "trivy-mcp:latest"
+      ]
+    },
+    "nuclei": {
+      "_description": "Vulnerability scanning for web targets",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "nuclei-mcp:latest"]
+    }
+  }
+}

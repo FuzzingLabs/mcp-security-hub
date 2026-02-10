@@ -18,15 +18,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install capa
-ARG CAPA_VERSION=7.0.1
-RUN curl -sL "https://github.com/mandiant/capa/releases/download/v${CAPA_VERSION}/capa-v${CAPA_VERSION}-linux.zip" -o /tmp/capa.zip && \
+ARG CAPA_VERSION=9.3.1
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ]; then ARCH_SUFFIX="-arm64"; else ARCH_SUFFIX=""; fi && \
+    curl -fsSL "https://github.com/mandiant/capa/releases/download/v${CAPA_VERSION}/capa-v${CAPA_VERSION}-linux${ARCH_SUFFIX}.zip" -o /tmp/capa.zip && \
     cd /tmp && unzip capa.zip && \
     mv capa /usr/local/bin/capa && \
     chmod +x /usr/local/bin/capa && \
     rm -rf /tmp/*
 
-# Note: capa --version may fail on non-x86_64 during build (e.g., ARM64 Mac)
-RUN capa --version || echo "Skipping version check (non-x86_64 build host)"
+# Verify capa installation
+RUN capa --version
 
 WORKDIR /app
 COPY requirements.txt ./

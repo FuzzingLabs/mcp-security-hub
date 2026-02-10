@@ -16,14 +16,15 @@ RUN apk add --no-cache \
     tini \
     git \
     curl \
+    unzip \
     && rm -rf /var/cache/apk/*
 
 # Install Nuclei from ProjectDiscovery releases
-ARG NUCLEI_VERSION=3.3.7
+ARG NUCLEI_VERSION=3.7.0
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; fi && \
     if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
-    curl -sL "https://github.com/projectdiscovery/nuclei/releases/download/v${NUCLEI_VERSION}/nuclei_${NUCLEI_VERSION}_linux_${ARCH}.zip" -o /tmp/nuclei.zip && \
+    curl -fsSL "https://github.com/projectdiscovery/nuclei/releases/download/v${NUCLEI_VERSION}/nuclei_${NUCLEI_VERSION}_linux_${ARCH}.zip" -o /tmp/nuclei.zip && \
     unzip -q /tmp/nuclei.zip -d /tmp && \
     mv /tmp/nuclei /usr/local/bin/nuclei && \
     chmod +x /usr/local/bin/nuclei && \

@@ -1,0 +1,105 @@
+{
+  "mcpServers": {
+    "nmap": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "--cap-add=NET_RAW", "nmap-mcp:latest"]
+    },
+    "nuclei": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "nuclei-mcp:latest"]
+    },
+    "sqlmap": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "sqlmap-mcp:latest"]
+    },
+    "ffuf": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "ffuf-mcp:latest"]
+    },
+    "gitleaks": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/your/repos:/app/target:ro",
+        "gitleaks-mcp:latest"
+      ]
+    },
+    "radare2": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/binaries:/samples:ro",
+        "radare2-mcp:latest"
+      ]
+    },
+    "yara": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/samples:/app/samples:ro",
+        "-v", "/path/to/yara-rules:/app/rules:ro",
+        "yara-mcp:latest"
+      ]
+    },
+    "capa": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/samples:/app/samples:ro",
+        "capa-mcp:latest"
+      ]
+    },
+    "binwalk": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/firmware:/app/samples:ro",
+        "binwalk-mcp:latest"
+      ]
+    },
+    "trivy": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/var/run/docker.sock:/var/run/docker.sock:ro",
+        "-v", "/path/to/scan:/app/target:ro",
+        "trivy-mcp:latest"
+      ]
+    },
+    "prowler": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "${HOME}/.aws:/home/mcpuser/.aws:ro",
+        "prowler-mcp:latest"
+      ],
+      "env": {
+        "AWS_DEFAULT_REGION": "us-east-1"
+      }
+    },
+    "masscan": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "--cap-add=NET_RAW", "masscan-mcp:latest"]
+    },
+    "whatweb": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "whatweb-mcp:latest"]
+    },
+    "searchsploit": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "searchsploit-mcp:latest"]
+    },
+    "waybackurls": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "waybackurls-mcp:latest"]
+    },
+    "semgrep": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/code:/app/target:ro",
+        "semgrep-mcp:latest"
+      ]
+    }
+  }
+}
