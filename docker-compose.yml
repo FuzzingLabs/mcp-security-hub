@@ -486,6 +486,45 @@ services:
   # ===========================================================================
   # Blockchain Security
   # ===========================================================================
+  daml-viewer-mcp:
+    build:
+      context: ./blockchain/daml-viewer-mcp
+      dockerfile: Dockerfile
+    image: daml-viewer-mcp:latest
+    container_name: daml-viewer-mcp
+
+    restart: "no"
+    profiles: [ "on-demand" ]
+
+    environment:
+      - DAML_VIEWER_OUTPUT_DIR=/app/output
+      - DAML_VIEWER_UPLOAD_DIR=/app/uploads
+      - DAML_VIEWER_TIMEOUT=${DAML_VIEWER_TIMEOUT:-120}
+      - DAML_VIEWER_MAX_CONCURRENT=${DAML_VIEWER_MAX_CONCURRENT:-3}
+      - DAML_VIEWER_MAX_FILE_SIZE=${DAML_VIEWER_MAX_FILE_SIZE:-104857600}
+      - DAML_VIEWER_ALLOW_ANY_PATH=${DAML_VIEWER_ALLOW_ANY_PATH:-0}
+
+    volumes:
+      - daml-viewer-output:/app/output
+      - daml-viewer-uploads:/app/uploads
+
+    networks:
+      - mcp-network
+
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
   solazy-mcp:
     build:
       context: ./blockchain/solazy-mcp
@@ -890,6 +929,12 @@ volumes:
 
   # Gitleaks
   gitleaks-output:
+    driver: local
+
+  # DAML Viewer
+  daml-viewer-output:
+    driver: local
+  daml-viewer-uploads:
     driver: local
 
   # sol-azy
