@@ -18,6 +18,8 @@ RUN apk add --no-cache \
     git \
     perl \
     perl-net-ssleay \
+    perl-json \
+    perl-xml-writer \
     && rm -rf /var/cache/apk/*
 
 # Clone and install Nikto
