@@ -8,14 +8,14 @@
 Production-ready, Dockerized MCP (Model Context Protocol) servers for offensive security tools. Enable AI assistants like Claude to perform security assessments, vulnerability scanning, and binary analysis.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/MCPs-35-brightgreen" alt="35 MCPs"/>
+  <img src="https://img.shields.io/badge/MCPs-36-brightgreen" alt="36 MCPs"/>
   <img src="https://img.shields.io/badge/Tools-185+-orange" alt="185+ Tools"/>
   <img src="https://img.shields.io/badge/Docker-Ready-blue" alt="Docker Ready"/>
 </p>
 
 ## Features
 
-- **35 MCP Servers** covering reconnaissance, web security, binary analysis, blockchain security, cloud security, code security, secrets detection, threat intelligence, OSINT, Active Directory, and more
+- **36 MCP Servers** covering reconnaissance, web security, binary analysis, blockchain security, cloud security, code security, secrets detection, threat intelligence, OSINT, Active Directory, and more
 - **175+ Security Tools** accessible via natural language through Claude or other MCP clients
 - **Production Hardened** - Non-root containers, minimal images, Trivy-scanned
 - **Docker Compose** orchestration for multi-tool workflows
@@ -110,10 +110,11 @@ For project-level config, copy `.mcp.json` to your project root. See [examples/]
 | [ghidra-mcp](./binary-analysis/ghidra-mcp) | - | Wrapper for [pyghidra-mcp](https://github.com/clearbluejar/pyghidra-mcp) - Headless AI-powered reverse engineering |
 | [ida-mcp](./binary-analysis/ida-mcp) | - | Wrapper for [ida-pro-mcp](https://github.com/mrexodia/ida-pro-mcp) - IDA Pro integration |
 
-### Blockchain Security (2 servers)
+### Blockchain Security (3 servers)
 
 | Server | Tools | Description |
 |--------|-------|-------------|
+| [daml-viewer-mcp](./blockchain/daml-viewer-mcp) | 1 | DAML access-control table generation and run tracking |
 | [medusa-mcp](./blockchain/medusa-mcp) | 4 | High-performance smart contract fuzzer for Solidity |
 | [solazy-mcp](./blockchain/solazy-mcp) | 8 | Solana sBPF static analysis and reverse engineering |
 
@@ -264,6 +265,7 @@ mcp-security-hub/
 │   ├── ghidra-mcp/         # Ghidra RE - pyghidra-mcp (headless)
 │   └── ida-mcp/            # IDA Pro (wrapper)
 ├── blockchain/
+│   ├── daml-viewer-mcp/    # DAML access-control analysis
 │   ├── medusa-mcp/         # Smart contract fuzzing
 │   └── solazy-mcp/         # Solana analysis
 ├── cloud-security/

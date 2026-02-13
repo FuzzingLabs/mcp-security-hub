@@ -30,6 +30,7 @@ MCP_SERVERS = [
     ("cloud-security", "trivy-mcp"),
     ("cloud-security", "prowler-mcp"),
     ("exploitation", "searchsploit-mcp"),
+    ("blockchain", "daml-viewer-mcp"),
 ]
 
 # MCP servers that wrap external implementations (Dockerfile only, no server.py)

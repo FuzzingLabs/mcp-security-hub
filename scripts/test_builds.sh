@@ -33,6 +33,7 @@ MCPS=(
     "cloud-security/trivy-mcp"
     "cloud-security/prowler-mcp"
     "exploitation/searchsploit-mcp"
+    "blockchain/daml-viewer-mcp"
     "blockchain/solazy-mcp"
 )
 
