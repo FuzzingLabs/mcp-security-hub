@@ -138,6 +138,12 @@ For project-level config, copy `.mcp.json` to your project root. See [examples/]
 |--------|-------|-------------|
 | [searchsploit-mcp](./exploitation/searchsploit-mcp) | 5 | Exploit-DB search and retrieval |
 
+### Fuzzing (1 server)
+
+| Server | Tools | Description |
+|--------|-------|-------------|
+| [dharma-mcp](./fuzzing/dharma-mcp) | 1 | Grammar-based test case generation |
+
 ### OSINT (2 servers)
 
 | Server | Tools | Description |
@@ -278,6 +284,8 @@ mcp-security-hub/
 │   └── gitleaks-mcp/       # Secrets detection
 ├── exploitation/
 │   └── searchsploit-mcp/   # Exploit database
+├── fuzzing/
+│   └── dharma-mcp/         # Grammar-based test case generation
 ├── osint/
 │   ├── maigret-mcp/        # Username OSINT (wrapper)
 │   └── dnstwist-mcp/       # Typosquatting detection (wrapper)

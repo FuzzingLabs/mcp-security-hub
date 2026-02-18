@@ -344,6 +344,36 @@ services:
           memory: 512M
 
   # ===========================================================================
+  # Fuzzing
+  # ===========================================================================
+  dharma-mcp:
+    build:
+      context: ./fuzzing/dharma-mcp
+      dockerfile: Dockerfile
+    image: dharma-mcp:latest
+    container_name: dharma-mcp
+    environment:
+      - DHARMA_GRAMMAR_DIR=/app/grammars
+      - DHARMA_MAX_COUNT=${DHARMA_MAX_COUNT:-1000}
+    volumes:
+      - dharma-grammars:/app/grammars
+      - dharma-output:/app/output
+    ports:
+      - "3022:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  # ===========================================================================
   # Binary Analysis
   # ===========================================================================
   ghidra-mcp:
@@ -947,4 +977,10 @@ volumes:
   medusa-output:
     driver: local
   medusa-uploads:
+    driver: local
+
+  # Dharma
+  dharma-grammars:
+    driver: local
+  dharma-output:
     driver: local
