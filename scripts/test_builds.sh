@@ -35,6 +35,7 @@ MCPS=(
     "exploitation/searchsploit-mcp"
     "blockchain/daml-viewer-mcp"
     "blockchain/solazy-mcp",
+    "fuzzing/dharma-mcp",
     "fuzzing/boofuzz-mcp"
 )
 
