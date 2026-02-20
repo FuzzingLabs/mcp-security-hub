@@ -138,11 +138,11 @@ For project-level config, copy `.mcp.json` to your project root. See [examples/]
 |--------|-------|-------------|
 | [searchsploit-mcp](./exploitation/searchsploit-mcp) | 5 | Exploit-DB search and retrieval |
 
-### Fuzzing (1 server)
-
-| Server | Tools | Description |
-|--------|-------|-------------|
-| [dharma-mcp](./fuzzing/dharma-mcp) | 2 | Grammar-based test case generation |
+### Fuzzing (2 server)
+   Server | Tools | Description |
+ |--------|-------|-------------|
+ | [boofuzz-mcp](./fuzzing/boofuzz-mcp) | 4 | Network protocol fuzzing using Boofuzz |
+ | [dharma-mcp](./fuzzing/dharma-mcp) | 2 | Grammar-based test case generation |
 
 ### OSINT (2 servers)
 
@@ -285,6 +285,7 @@ mcp-security-hub/
 ├── exploitation/
 │   └── searchsploit-mcp/   # Exploit database
 ├── fuzzing/
+│   ├── boofuzz-mcp/        # Network protocol fuzzing using Boofuzz
 │   └── dharma-mcp/         # Grammar-based test case generation
 ├── osint/
 │   ├── maigret-mcp/        # Username OSINT (wrapper)

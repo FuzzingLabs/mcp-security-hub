@@ -372,6 +372,36 @@ services:
         limits:
           cpus: '1'
           memory: 512M
+  
+  boofuzz-mcp:
+    build:
+      context: ./fuzzing/boofuzz-mcp
+      dockerfile: Dockerfile
+    image: boofuzz-mcp:latest
+    container_name: boofuzz-mcp
+    environment:
+      - BOOFUZZ_SCRIPT_DIR=/app/scripts
+      - BOOFUZZ_RESULTS_DIR=/app/results
+    volumes:
+      - boofuzz-scripts:/app/scripts
+      - boofuzz-results:/app/results
+    ports:
+      - "3029:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   # ===========================================================================
   # Binary Analysis
@@ -983,4 +1013,10 @@ volumes:
   dharma-grammars:
     driver: local
   dharma-output:
+    driver: local
+
+  # Boofuzz
+  boofuzz-scripts:
+    driver: local
+  boofuzz-results:
     driver: local
