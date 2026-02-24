@@ -24,6 +24,7 @@ MCP_SERVERS = [
     ("web-security", "nuclei-mcp"),
     ("web-security", "sqlmap-mcp"),
     ("web-security", "ffuf-mcp"),
+    ("web-security", "waybackurls-mcp"),
     ("binary-analysis", "binwalk-mcp"),
     ("binary-analysis", "yara-mcp"),
     ("binary-analysis", "capa-mcp"),
@@ -31,6 +32,11 @@ MCP_SERVERS = [
     ("cloud-security", "prowler-mcp"),
     ("exploitation", "searchsploit-mcp"),
     ("blockchain", "daml-viewer-mcp"),
+    ("blockchain", "medusa-mcp"),
+    ("blockchain", "solazy-mcp"),
+    ("fuzzing", "boofuzz-mcp"),
+    ("fuzzing", "dharma-mcp"),
+    ("secrets", "gitleaks-mcp"),
 ]
 
 # MCP servers that wrap external implementations (Dockerfile only, no server.py)
