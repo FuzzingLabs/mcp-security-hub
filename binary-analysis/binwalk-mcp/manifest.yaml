@@ -1,0 +1,21 @@
+name: binwalk-mcp
+category: binary-analysis
+type: full
+tools:
+- name: binwalk_scan
+  required_params:
+  - filepath
+- name: binwalk_extract
+  required_params:
+  - filepath
+- name: binwalk_entropy
+  required_params:
+  - filepath
+- name: binwalk_hexdump
+  required_params:
+  - filepath
+- name: get_scan_results
+  required_params:
+  - scan_id
+- name: list_extractions
+- name: list_active_scans

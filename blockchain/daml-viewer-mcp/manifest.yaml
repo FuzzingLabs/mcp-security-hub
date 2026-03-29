@@ -1,0 +1,12 @@
+name: daml-viewer-mcp
+category: blockchain
+type: full
+tools:
+- name: damlviewer_generate_table
+  required_params:
+  - path
+- name: get_run_results
+  required_params:
+  - run_id
+- name: list_runs
+- name: list_active_runs

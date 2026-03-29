@@ -1,0 +1,26 @@
+name: solazy-mcp
+category: blockchain
+type: full
+tools:
+- name: solazy_reverse
+  required_params:
+  - filepath
+- name: solazy_sast
+  required_params:
+  - target_dir
+- name: solazy_recap
+  required_params:
+  - anchor_dir
+- name: solazy_fetcher
+  required_params:
+  - program_id
+- name: solazy_dotting
+  required_params:
+  - config_path
+  - reduced_dot_path
+  - full_dot_path
+- name: get_run_results
+  required_params:
+  - run_id
+- name: list_runs
+- name: list_active_runs

@@ -1,0 +1,23 @@
+name: sqlmap-mcp
+category: web-security
+type: full
+tools:
+- name: sql_scan
+  required_params:
+  - target
+- name: sql_enumerate
+  required_params:
+  - target
+- name: sql_dump
+  required_params:
+  - target
+  - database
+  - table
+- name: sql_test
+  required_params:
+  - target
+  - param
+- name: get_scan_results
+  required_params:
+  - scan_id
+- name: list_active_scans

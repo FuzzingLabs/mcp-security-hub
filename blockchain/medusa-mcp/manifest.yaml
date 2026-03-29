@@ -1,0 +1,10 @@
+name: medusa-mcp
+category: blockchain
+type: full
+tools:
+- name: medusa_init
+- name: medusa_fuzz
+- name: medusa_get_config
+- name: medusa_update_config
+  required_params:
+  - updates

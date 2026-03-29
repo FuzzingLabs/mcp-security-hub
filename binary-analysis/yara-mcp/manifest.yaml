@@ -1,0 +1,16 @@
+name: yara-mcp
+category: binary-analysis
+type: full
+tools:
+- name: yara_scan
+  required_params:
+  - target
+- name: yara_scan_with_rules
+  required_params:
+  - target
+  - rules
+- name: list_rulesets
+- name: get_scan_results
+  required_params:
+  - scan_id
+- name: list_active_scans
