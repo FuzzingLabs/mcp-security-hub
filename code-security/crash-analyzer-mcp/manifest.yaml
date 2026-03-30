@@ -1,0 +1,7 @@
+name: crash-analyzer-mcp
+category: code-security
+type: full
+tools:
+- name: crash_analyze
+  required_params:
+  - project_path

@@ -1,0 +1,3 @@
+mcp
+pydantic
+pydantic-settings

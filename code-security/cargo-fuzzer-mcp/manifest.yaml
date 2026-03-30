@@ -1,0 +1,16 @@
+name: cargo-fuzzer-mcp
+category: code-security
+type: full
+tools:
+- name: cargo_fuzz_run
+  required_params:
+  - project_path
+- name: cargo_fuzz_start
+  required_params:
+  - project_path
+- name: cargo_fuzz_status
+  required_params:
+  - session_id
+- name: cargo_fuzz_stop
+  required_params:
+  - session_id
