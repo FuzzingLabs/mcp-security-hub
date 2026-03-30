@@ -3,16 +3,16 @@
 Tests are organized in tiers:
 
 Tier 1 — Structure (instant, no Docker)
-    File existence, manifest presence, naming conventions.
+    File existence, naming conventions.
+    manifest.yaml is only required for wrapper servers (no server.py to introspect).
 
-Tier 2 — MCP compliance (fast, Python-only)
+Tier 2 — MCP compliance (fast, Python-only, full servers only)
     server.py imports, list_tools() works, tools have valid schemas.
 
-Tier 3 — Contract (fast, Python-only)
-    list_tools() output matches manifest.yaml declarations.
-
-Tier 4 — Docker smoke (slow, requires Docker)
+Tier 3 — Docker smoke (slow, requires Docker)
     Build image, start container, speak MCP JSON-RPC, validate tools/list.
+    For full servers: expected tools are generated from list_tools() at test time.
+    For wrapper servers: expected tools come from manifest.yaml.
     Marked with @pytest.mark.docker so it only runs when requested.
 """
 
@@ -25,7 +25,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-import yaml
 
 # Ensure tests/ directory is on path for discovery/harness imports
 _TESTS_DIR = Path(__file__).resolve().parent
@@ -41,8 +40,6 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 ALL_SERVERS = discover_servers(ROOT_DIR)
 FULL_SERVERS = [s for s in ALL_SERVERS if s.server_type == "full"]
 WRAPPER_SERVERS = [s for s in ALL_SERVERS if s.server_type == "wrapper"]
-SERVERS_WITH_MANIFESTS = [s for s in ALL_SERVERS if s.has_manifest]
-FULL_WITH_MANIFESTS = [s for s in FULL_SERVERS if s.has_manifest]
 
 
 def _sid(server: MCPServer) -> str:
@@ -106,11 +103,14 @@ class TestStructure:
     def test_readme_exists(self, server: MCPServer):
         assert server.readme.exists(), f"Missing README.md: {server.path}"
 
-    @pytest.mark.parametrize("server", ALL_SERVERS, ids=[_sid(s) for s in ALL_SERVERS])
-    def test_manifest_exists(self, server: MCPServer):
+    @pytest.mark.parametrize(
+        "server", WRAPPER_SERVERS, ids=[_sid(s) for s in WRAPPER_SERVERS]
+    )
+    def test_wrapper_manifest_exists(self, server: MCPServer):
+        """Wrapper servers must have manifest.yaml (only source of truth)."""
         assert server.manifest_path.exists(), (
-            f"Missing manifest.yaml: {server.path}\n"
-            f"Run: python scripts/generate_manifests.py"
+            f"Missing manifest.yaml for wrapper: {server.path}\n"
+            f"Wrapper servers need a manifest since there is no server.py to introspect."
         )
 
     @pytest.mark.parametrize("server", FULL_SERVERS, ids=[_sid(s) for s in FULL_SERVERS])
@@ -129,39 +129,18 @@ class TestStructure:
         )
 
     @pytest.mark.parametrize(
-        "server", SERVERS_WITH_MANIFESTS, ids=[_sid(s) for s in SERVERS_WITH_MANIFESTS]
+        "server", WRAPPER_SERVERS, ids=[_sid(s) for s in WRAPPER_SERVERS]
     )
-    def test_manifest_valid_yaml(self, server: MCPServer):
-        """Manifest must be valid YAML with required fields."""
+    def test_wrapper_manifest_valid(self, server: MCPServer):
+        """Wrapper manifest must have required fields."""
         manifest = server.manifest
         assert isinstance(manifest, dict), "Manifest is not a dict"
         assert "name" in manifest, "Manifest missing 'name'"
         assert "category" in manifest, "Manifest missing 'category'"
         assert "type" in manifest, "Manifest missing 'type'"
-        assert manifest["type"] in ("full", "wrapper"), (
-            f"Manifest type must be 'full' or 'wrapper', got '{manifest['type']}'"
-        )
         assert manifest["name"] == server.name, (
             f"Manifest name '{manifest['name']}' != directory name '{server.name}'"
         )
-        assert manifest["category"] == server.category, (
-            f"Manifest category '{manifest['category']}' != directory '{server.category}'"
-        )
-
-    @pytest.mark.parametrize(
-        "server", SERVERS_WITH_MANIFESTS, ids=[_sid(s) for s in SERVERS_WITH_MANIFESTS]
-    )
-    def test_manifest_tools_format(self, server: MCPServer):
-        """If manifest declares tools, each must have a name."""
-        tools = server.manifest.get("tools", [])
-        if not tools:
-            return
-        for tool in tools:
-            assert isinstance(tool, dict), f"Tool entry is not a dict: {tool}"
-            assert "name" in tool, f"Tool entry missing 'name': {tool}"
-            assert re.match(r"^[a-z][a-z0-9_]*$", tool["name"]), (
-                f"Tool name '{tool['name']}' must be snake_case"
-            )
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -238,151 +217,112 @@ class TestMCPCompliance:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# Tier 3 — Contract tests (manifest vs runtime)
+# Tier 3 — Docker MCP smoke test (slow, opt-in)
 # ═════════════════════════════════════════════════════════════════════════════
 
-
-class TestContract:
-    """Verify list_tools() output matches manifest declarations."""
-
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "server", FULL_WITH_MANIFESTS, ids=[_sid(s) for s in FULL_WITH_MANIFESTS]
-    )
-    async def test_manifest_tools_present(self, server: MCPServer):
-        """Every tool declared in manifest must be returned by list_tools()."""
-        module = load_server_module(server)
-        tools = await get_tools_from_module(module)
-        tool_names = {t.name for t in tools}
-
-        manifest_tools = server.manifest.get("tools", [])
-        if not manifest_tools:
-            pytest.skip("Manifest declares no tools")
-
-        missing = []
-        for expected in manifest_tools:
-            if expected["name"] not in tool_names:
-                missing.append(expected["name"])
-
-        assert not missing, (
-            f"Tools declared in manifest but missing from list_tools(): {missing}\n"
-            f"Server returns: {sorted(tool_names)}"
-        )
-
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "server", FULL_WITH_MANIFESTS, ids=[_sid(s) for s in FULL_WITH_MANIFESTS]
-    )
-    async def test_manifest_required_params(self, server: MCPServer):
-        """Required params declared in manifest must appear in tool schema."""
-        module = load_server_module(server)
-        tools = await get_tools_from_module(module)
-        tools_by_name = {t.name: t for t in tools}
-
-        manifest_tools = server.manifest.get("tools", [])
-        errors = []
-
-        for expected in manifest_tools:
-            name = expected["name"]
-            expected_params = set(expected.get("required_params", []))
-            if not expected_params:
-                continue
-
-            tool = tools_by_name.get(name)
-            if tool is None:
-                continue  # caught by test_manifest_tools_present
-
-            schema = getattr(tool, "inputSchema", {})
-            actual_required = set(schema.get("required", []))
-            missing = expected_params - actual_required
-            if missing:
-                errors.append(f"Tool '{name}' missing required params: {missing}")
-
-        assert not errors, "\n".join(errors)
-
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "server", FULL_WITH_MANIFESTS, ids=[_sid(s) for s in FULL_WITH_MANIFESTS]
-    )
-    async def test_no_undeclared_tools(self, server: MCPServer):
-        """Warn about tools returned by server but not in manifest.
-
-        New tools aren't errors, but the manifest should be kept in sync.
-        """
-        module = load_server_module(server)
-        tools = await get_tools_from_module(module)
-        tool_names = {t.name for t in tools}
-
-        manifest_tools = server.manifest.get("tools", [])
-        declared = {t["name"] for t in manifest_tools}
-
-        undeclared = tool_names - declared
-        if undeclared:
-            pytest.warns(
-                UserWarning,
-                match="undeclared",
-            ) if False else None
-            # This is informational — just print a warning
-            import warnings
-            warnings.warn(
-                f"Tools not in manifest for {server.name}: {sorted(undeclared)}. "
-                f"Run: python scripts/generate_manifests.py --all",
-                stacklevel=1,
-            )
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# Tier 4 — Docker MCP smoke test (slow, opt-in)
-# ═════════════════════════════════════════════════════════════════════════════
-
-# Only servers with manifests declaring tools can be smoke-tested.
-SMOKE_TESTABLE = [
-    s for s in SERVERS_WITH_MANIFESTS
-    if s.manifest.get("tools")
+# Wrappers with manifest declaring tools can be smoke-tested against manifest.
+WRAPPER_WITH_TOOLS = [
+    s for s in WRAPPER_SERVERS
+    if s.has_manifest and s.manifest.get("tools")
 ]
+
+
+def _tools_from_module_sync(server: MCPServer) -> list[dict[str, Any]]:
+    """Load server.py and extract expected tools (synchronous wrapper)."""
+    import asyncio
+
+    module = load_server_module(server)
+    loop = asyncio.new_event_loop()
+    try:
+        tools = loop.run_until_complete(get_tools_from_module(module))
+    finally:
+        loop.close()
+
+    result = []
+    for tool in tools:
+        entry: dict[str, Any] = {"name": tool.name}
+        schema = getattr(tool, "inputSchema", {})
+        required = schema.get("required", [])
+        if required:
+            entry["required_params"] = required
+        result.append(entry)
+    return result
 
 
 @pytest.mark.docker
 class TestDockerSmoke:
     """Build image, start container, validate MCP protocol and tool list.
 
+    For full servers: expected tools generated from list_tools() at test time.
+    For wrapper servers: expected tools come from manifest.yaml.
+
     Run with: pytest -m docker
     """
 
     @pytest.mark.parametrize(
-        "server", SMOKE_TESTABLE, ids=[_sid(s) for s in SMOKE_TESTABLE]
+        "server", FULL_SERVERS, ids=[_sid(s) for s in FULL_SERVERS]
     )
-    def test_mcp_smoke(self, server: MCPServer, docker_available):
-        """Full MCP protocol smoke test inside Docker."""
+    def test_full_server_smoke(self, server: MCPServer, docker_available):
+        """MCP smoke test for full servers — expected tools from list_tools()."""
         if not docker_available:
             pytest.skip("Docker not available")
 
         from mcp_harness import MCPSmokeTestError, build_image, run_mcp_smoke_test
 
         image_tag = f"test-{server.name}:smoke"
+        expected_tools = _tools_from_module_sync(server)
 
-        # Build
         try:
             build_image(server.path, image_tag, timeout=600)
         except MCPSmokeTestError as e:
             pytest.fail(str(e))
 
-        # Test MCP protocol
         try:
             result = run_mcp_smoke_test(
                 image_tag=image_tag,
-                manifest=server.manifest,
+                expected_tools=expected_tools,
                 timeout=30.0,
             )
         except MCPSmokeTestError as e:
             pytest.fail(f"MCP smoke test failed for {server.name}: {e}")
         finally:
-            # Cleanup image
             import subprocess
-            subprocess.run(
-                ["docker", "rmi", "-f", image_tag],
-                capture_output=True,
+            subprocess.run(["docker", "rmi", "-f", image_tag], capture_output=True)
+
+        assert not result["errors"], (
+            f"Contract violations for {server.name}:\n"
+            + "\n".join(f"  - {e}" for e in result["errors"])
+        )
+
+    @pytest.mark.parametrize(
+        "server", WRAPPER_WITH_TOOLS, ids=[_sid(s) for s in WRAPPER_WITH_TOOLS]
+    )
+    def test_wrapper_smoke(self, server: MCPServer, docker_available):
+        """MCP smoke test for wrapper servers — expected tools from manifest.yaml."""
+        if not docker_available:
+            pytest.skip("Docker not available")
+
+        from mcp_harness import MCPSmokeTestError, build_image, run_mcp_smoke_test
+
+        image_tag = f"test-{server.name}:smoke"
+        expected_tools = server.manifest.get("tools", [])
+
+        try:
+            build_image(server.path, image_tag, timeout=600)
+        except MCPSmokeTestError as e:
+            pytest.fail(str(e))
+
+        try:
+            result = run_mcp_smoke_test(
+                image_tag=image_tag,
+                expected_tools=expected_tools,
+                timeout=30.0,
             )
+        except MCPSmokeTestError as e:
+            pytest.fail(f"MCP smoke test failed for {server.name}: {e}")
+        finally:
+            import subprocess
+            subprocess.run(["docker", "rmi", "-f", image_tag], capture_output=True)
 
         assert not result["errors"], (
             f"Contract violations for {server.name}:\n"

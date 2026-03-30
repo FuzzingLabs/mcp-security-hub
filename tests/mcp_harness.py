@@ -1,8 +1,8 @@
 """MCP protocol smoke test harness.
 
 Builds a Docker image, starts the container, speaks MCP JSON-RPC over
-stdin/stdout, and validates the ``tools/list`` response against the
-server's manifest.yaml.
+stdin/stdout, and validates the ``tools/list`` response against expected
+tool declarations.
 
 This is the only test that catches real breakages: upstream binary
 changes, renamed entrypoints, broken dependencies inside the container.
@@ -105,13 +105,14 @@ def _read_response(proc: subprocess.Popen, timeout: float = 30.0) -> dict[str, A
 
 def run_mcp_smoke_test(
     image_tag: str,
-    manifest: dict[str, Any],
+    expected_tools: list[dict[str, Any]] | None = None,
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     """Start a container, perform MCP handshake, and validate tools/list.
 
     :param image_tag: Docker image tag to run.
-    :param manifest: Parsed manifest.yaml content.
+    :param expected_tools: List of expected tool dicts ({"name": ..., "required_params": [...]}).
+        If None, only validates that the MCP handshake succeeds and tools/list returns.
     :param timeout: Per-request timeout.
     :returns: Dict with tools found and validation results.
     :raises MCPSmokeTestError: On protocol errors.
@@ -150,30 +151,29 @@ def run_mcp_smoke_test(
         tools = tools_response.get("result", {}).get("tools", [])
         tool_names = {t["name"] for t in tools}
 
-        # Validate against manifest
+        # Validate against expected tools
         errors: list[str] = []
-        manifest_tools = manifest.get("tools", [])
+        if expected_tools:
+            for expected_tool in expected_tools:
+                name = expected_tool["name"]
+                if name not in tool_names:
+                    errors.append(f"Tool '{name}' expected but not returned by server")
 
-        for expected_tool in manifest_tools:
-            name = expected_tool["name"]
-            if name not in tool_names:
-                errors.append(f"Tool '{name}' declared in manifest but not returned by server")
-
-            # Check required params if tool exists
-            matching = [t for t in tools if t["name"] == name]
-            if matching:
-                schema = matching[0].get("inputSchema", {})
-                schema_required = set(schema.get("required", []))
-                expected_required = set(expected_tool.get("required_params", []))
-                missing_params = expected_required - schema_required
-                if missing_params:
-                    errors.append(
-                        f"Tool '{name}' missing required params: {missing_params}"
-                    )
+                # Check required params if tool exists
+                matching = [t for t in tools if t["name"] == name]
+                if matching:
+                    schema = matching[0].get("inputSchema", {})
+                    schema_required = set(schema.get("required", []))
+                    expected_required = set(expected_tool.get("required_params", []))
+                    missing_params = expected_required - schema_required
+                    if missing_params:
+                        errors.append(
+                            f"Tool '{name}' missing required params: {missing_params}"
+                        )
 
         return {
             "tools_found": sorted(tool_names),
-            "tools_expected": [t["name"] for t in manifest_tools],
+            "tools_expected": [t["name"] for t in expected_tools] if expected_tools else [],
             "tool_count": len(tools),
             "errors": errors,
             "init_response": init_response,

@@ -1,3 +1,4 @@
 name: semgrep-mcp
 category: code-security
 type: wrapper
+tools: []
