@@ -1,0 +1,152 @@
+{
+  "version": "1.0",
+  "description": "Workflow hints for mcp-security-hub pipelines. Consumed by FuzzForge to append suggested_next_steps after each tool execution.",
+  "hints": {
+    "after:binwalk_scan": {
+      "suggest": ["binwalk-mcp:binwalk_extract"],
+      "reason": "Extract the identified filesystems and archives for deeper analysis"
+    },
+    "after:binwalk_extract": {
+      "suggest": ["yara-mcp:yara_scan_with_rules", "capa-mcp:capa_analyze"],
+      "reason": "Scan extracted files for vulnerability patterns and detect binary capabilities",
+      "pass_from_result": "Use the extracted directory path from the artifacts list as the scan target"
+    },
+    "after:binwalk_entropy": {
+      "suggest": ["binwalk-mcp:binwalk_extract"],
+      "reason": "High-entropy regions indicate compressed or encrypted sections — extract to inspect them"
+    },
+    "after:yara_scan": {
+      "suggest": ["yara-mcp:yara_scan_with_rules"],
+      "reason": "Run a targeted scan with specific vulnerability rulesets for deeper coverage"
+    },
+    "after:yara_scan_with_rules": {
+      "suggest": ["capa-mcp:capa_analyze"],
+      "reason": "Confirm capabilities and behaviors in binaries flagged by YARA rules",
+      "pass_from_result": "Use the file paths of binaries with matches as capa_analyze targets"
+    },
+    "after:capa_analyze": {
+      "suggest": [],
+      "reason": "Review detected capabilities. If suspicious functions are found (command execution, network, crypto), investigate further with a disassembler such as radare2-mcp or ghidra-mcp."
+    },
+
+    "after:rust_analyze": {
+      "suggest": ["harness-tester-mcp:harness_test"],
+      "prerequisite": "Write fuzz harnesses (cargo-fuzz format) for the identified entry points. Place them in fuzz/fuzz_targets/. Prioritize functions that parse untrusted input, handle file/network data, or were flagged with unsafe blocks or CVEs. Each harness should provide diverse seed inputs that exercise different code paths.",
+      "reason": "Validate harness quality before fuzzing — catches compilation errors and estimates coverage"
+    },
+    "after:harness_test": {
+      "branches": [
+        {
+          "condition": "score >= 80 (verdict: production-ready)",
+          "suggest": ["cargo-fuzzer-mcp:cargo_fuzz_run"],
+          "reason": "Harness meets quality threshold — start fuzzing"
+        },
+        {
+          "condition": "score < 80 (verdict: needs-improvement or broken)",
+          "prerequisite": "Fix the harness based on the reported issues (compilation errors, missing seed corpus, low coverage score). Address each listed issue before re-testing.",
+          "suggest": ["harness-tester-mcp:harness_test"],
+          "reason": "Iterate until the harness reaches production-ready quality (score >= 80)"
+        }
+      ]
+    },
+    "after:cargo_fuzz_run": {
+      "branches": [
+        {
+          "condition": "crashes found (crash_count > 0 or crashes listed in artifacts)",
+          "pass_from_result": "Extract crash file paths from the artifacts list — they will have type 'crash-input'",
+          "suggest": ["crash-analyzer-mcp:crash_analyze"],
+          "reason": "Analyze crash inputs to classify vulnerability type and severity"
+        },
+        {
+          "condition": "no crashes but execution count is low (< 10000)",
+          "suggest": ["cargo-fuzzer-mcp:cargo_fuzz_start"],
+          "reason": "Switch to continuous fuzzing mode for a longer campaign to increase coverage"
+        },
+        {
+          "condition": "no crashes and sufficient executions (>= 10000)",
+          "suggest": [],
+          "reason": "Target appears robust for this harness. Consider writing harnesses for other entry points identified by rust_analyze."
+        }
+      ]
+    },
+    "after:cargo_fuzz_stop": {
+      "branches": [
+        {
+          "condition": "crashes found in results",
+          "pass_from_result": "Extract crash file paths from the stop result or artifacts list",
+          "suggest": ["crash-analyzer-mcp:crash_analyze"],
+          "reason": "Analyze crash inputs to classify vulnerability type and severity"
+        },
+        {
+          "condition": "no crashes",
+          "suggest": [],
+          "reason": "Campaign completed without crashes. Consider targeting other entry points or adding more diverse seed inputs."
+        }
+      ]
+    },
+    "after:crash_analyze": {
+      "suggest": [],
+      "reason": "Review the crash classification. High/critical severity findings should be reported as security vulnerabilities. The crash signature can be used for deduplication. Consider writing a minimal standalone reproducer for the bug."
+    },
+
+    "after:go_analyze": {
+      "suggest": ["go-harness-tester-mcp:go_harness_test"],
+      "prerequisite": "Write fuzz harnesses for the identified Fuzz* entry points or vulnerable functions. Use Go's native fuzzing format (func FuzzXxx(f *testing.F)). Place them in the same package alongside existing tests. Prioritize parsers, deserializers, and functions flagged with unsafe operations or CVEs. Add seed corpus entries via f.Add() that exercise different code paths.",
+      "reason": "Validate harness quality before fuzzing"
+    },
+    "after:go_harness_test": {
+      "branches": [
+        {
+          "condition": "score >= 80 (verdict: production-ready)",
+          "suggest": ["go-fuzzer-mcp:go_fuzz_run"],
+          "reason": "Harness meets quality threshold — start fuzzing"
+        },
+        {
+          "condition": "score < 80 (verdict: needs-improvement or broken)",
+          "prerequisite": "Fix the harness based on the reported issues (compilation errors, missing seed corpus, low coverage). Address each listed issue before re-testing.",
+          "suggest": ["go-harness-tester-mcp:go_harness_test"],
+          "reason": "Iterate until the harness reaches production-ready quality (score >= 80)"
+        }
+      ]
+    },
+    "after:go_fuzz_run": {
+      "branches": [
+        {
+          "condition": "crashes found (crash_count > 0 or crash files in artifacts)",
+          "pass_from_result": "Extract crash file paths from the artifacts list — they will have type 'crash-input'",
+          "suggest": ["go-crash-analyzer-mcp:go_crash_analyze"],
+          "reason": "Analyze crash inputs to classify vulnerability type and severity"
+        },
+        {
+          "condition": "no crashes but execution count is low (< 10000)",
+          "suggest": ["go-fuzzer-mcp:go_fuzz_start"],
+          "reason": "Switch to continuous fuzzing mode for a longer campaign to increase coverage"
+        },
+        {
+          "condition": "no crashes and sufficient executions (>= 10000)",
+          "suggest": [],
+          "reason": "Target appears robust for this harness. Consider writing harnesses for other entry points identified by go_analyze."
+        }
+      ]
+    },
+    "after:go_fuzz_stop": {
+      "branches": [
+        {
+          "condition": "crashes found in results",
+          "pass_from_result": "Extract crash file paths from the stop result or artifacts list",
+          "suggest": ["go-crash-analyzer-mcp:go_crash_analyze"],
+          "reason": "Analyze crash inputs to classify vulnerability type and severity"
+        },
+        {
+          "condition": "no crashes",
+          "suggest": [],
+          "reason": "Campaign completed without crashes. Consider targeting other entry points or adding more diverse seed inputs."
+        }
+      ]
+    },
+    "after:go_crash_analyze": {
+      "suggest": [],
+      "reason": "Review the crash classification. High/critical severity findings should be reported as security vulnerabilities. The crash signature can be used for deduplication across multiple fuzz runs."
+    }
+  }
+}
