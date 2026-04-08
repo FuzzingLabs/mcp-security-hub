@@ -1,0 +1,4 @@
+name: hashcat-mcp
+category: password-cracking
+type: wrapper
+tools: []

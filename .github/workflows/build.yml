@@ -153,9 +153,10 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          pip install pytest pytest-asyncio
+          pip install pytest pytest-asyncio pyyaml mcp pydantic pydantic-settings
+          find . -path '*/*/requirements.txt' -exec pip install -r {} \; 2>/dev/null || true
 
-      - name: Run tests
+      - name: Run validation tests (Tiers 1-3)
         run: |
-          pytest tests/ -v --tb=short || true
+          pytest tests/test_hub_servers.py -m "not docker" -v --tb=short
 

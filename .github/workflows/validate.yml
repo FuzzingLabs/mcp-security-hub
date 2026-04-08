@@ -1,0 +1,163 @@
+# MCP Server Validation Pipeline
+#
+# Tiers:
+#   1-3: Structure, manifest, and contract tests (every PR, no Docker)
+#   4:   Docker MCP smoke tests (changed servers on PR, all on schedule)
+#
+# Replaces the old `test` job in build.yml which used `|| true`.
+
+name: Validate MCP Servers
+
+on:
+  pull_request:
+    branches: [master, main]
+  push:
+    branches: [master, main]
+  schedule:
+    # Weekly full smoke test — Sunday 03:00 UTC
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      run_docker_smoke:
+        description: 'Run Docker smoke tests for all servers'
+        type: boolean
+        default: false
+
+jobs:
+  # ===========================================================================
+  # Tiers 1-3: Structure + Compliance + Contract (fast, no Docker)
+  # ===========================================================================
+  validate:
+    name: Validate (Tiers 1-3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio pyyaml mcp pydantic pydantic-settings
+
+      - name: Install server dependencies
+        run: |
+          # Install requirements from all full servers so imports work
+          find . -path '*/*/requirements.txt' -exec pip install -r {} \; 2>/dev/null || true
+
+      - name: Run structure + compliance + contract tests
+        run: |
+          pytest tests/test_hub_servers.py -m "not docker" -v --tb=short
+
+  # ===========================================================================
+  # Tier 4: Docker MCP smoke tests (slow, requires Docker)
+  # ===========================================================================
+  detect-changes:
+    name: Detect changed servers
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    outputs:
+      servers: ${{ steps.changes.outputs.servers }}
+      has_changes: ${{ steps.changes.outputs.has_changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed MCP servers
+        id: changes
+        run: |
+          # Get list of changed files in the PR
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          # Extract unique server directories (category/name) that changed
+          SERVERS=$(echo "$CHANGED" | grep -oP '^[^/]+/[^/]+-mcp' | sort -u || true)
+
+          if [ -z "$SERVERS" ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "servers=[]" >> "$GITHUB_OUTPUT"
+            echo "No MCP server changes detected"
+          else
+            # Build JSON array of {category, name, path} objects
+            JSON="["
+            FIRST=true
+            for SERVER in $SERVERS; do
+              CATEGORY=$(echo "$SERVER" | cut -d/ -f1)
+              NAME=$(echo "$SERVER" | cut -d/ -f2)
+              # Only include if Dockerfile exists
+              if [ -f "$SERVER/Dockerfile" ]; then
+                if [ "$FIRST" = true ]; then
+                  FIRST=false
+                else
+                  JSON="$JSON,"
+                fi
+                JSON="$JSON{\"category\":\"$CATEGORY\",\"name\":\"$NAME\",\"path\":\"./$SERVER\"}"
+              fi
+            done
+            JSON="$JSON]"
+
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "servers=$JSON" >> "$GITHUB_OUTPUT"
+            echo "Changed servers: $JSON"
+          fi
+
+  smoke-test-pr:
+    name: "Smoke: ${{ matrix.server.name }}"
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        server: ${{ fromJson(needs.detect-changes.outputs.servers) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependencies
+        run: pip install pytest pytest-asyncio pyyaml
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run MCP smoke test for ${{ matrix.server.name }}
+        run: |
+          pytest tests/test_hub_servers.py -m docker -v --tb=long \
+            -k "${{ matrix.server.name }}"
+        timeout-minutes: 15
+
+  # Full smoke test — schedule or manual trigger
+  smoke-test-all:
+    name: "Smoke (all servers)"
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_docker_smoke)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependencies
+        run: pip install pytest pytest-asyncio pyyaml
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run all MCP smoke tests
+        run: |
+          pytest tests/test_hub_servers.py -m docker -v --tb=long
+        timeout-minutes: 120
