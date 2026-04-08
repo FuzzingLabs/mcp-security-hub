@@ -2,7 +2,7 @@
 # Official Aqua Security trivy-mcp plugin
 # Based on: https://github.com/aquasecurity/trivy-mcp
 
-FROM aquasec/trivy:latest
+FROM aquasecurity/trivy:latest
 
 LABEL org.opencontainers.image.source="https://github.com/FuzzingLabs/offensive-security-mcps"
 LABEL org.opencontainers.image.description="Trivy MCP Server - Official Aqua Security MCP plugin"
