@@ -1,0 +1,221 @@
+[
+  {
+    "id": "ATR-2026-00001",
+    "title": "Direct Prompt Injection - Instruction Override",
+    "severity": "critical",
+    "category": "prompt-injection",
+    "threat_category": "PROMPT INJECTION",
+    "patterns": [
+      "(?i)(?:ignore|disregard|forget|override|bypass)\\s+(?:all\\s+)?(?:previous|prior|above|earlier|original|system)\\s+(?:instructions|rules|guidelines|prompts|directives)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00002",
+    "title": "Prompt Injection - Role Reassignment",
+    "severity": "critical",
+    "category": "prompt-injection",
+    "threat_category": "PROMPT INJECTION",
+    "patterns": [
+      "(?i)you\\s+are\\s+(?:now|no\\s+longer)\\s+(?:a|an|the)\\s+(?:different|new|unrestricted|unfiltered|jailbroken)",
+      "(?i)(?:act|behave|respond|pretend)\\s+(?:as|like)\\s+(?:if\\s+)?(?:you\\s+(?:are|were)\\s+)?(?:a\\s+)?(?:different|new|unrestricted|evil|unfiltered)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00003",
+    "title": "Prompt Injection - Delimiter Escape",
+    "severity": "high",
+    "category": "prompt-injection",
+    "threat_category": "PROMPT INJECTION",
+    "patterns": [
+      "(?i)(?:<\\|?(?:im_(?:start|end)|system|end(?:of(?:text|prompt))?|assistant)\\|?>)",
+      "(?i)\\[(?:INST|SYS(?:TEM)?|\\/?INST)\\]"
+    ]
+  },
+  {
+    "id": "ATR-2026-00004",
+    "title": "Jailbreak - DAN Mode Activation",
+    "severity": "critical",
+    "category": "jailbreak",
+    "threat_category": "JAILBREAK",
+    "patterns": [
+      "(?i)(?:DAN|do\\s+anything\\s+now)\\s+(?:mode|jailbreak|prompt|enabled)",
+      "(?i)(?:enable|activate|enter|switch\\s+to)\\s+(?:DAN|jailbreak|unrestricted|developer|god)\\s*(?:mode)?"
+    ]
+  },
+  {
+    "id": "ATR-2026-00005",
+    "title": "Jailbreak - Safety Filter Bypass",
+    "severity": "critical",
+    "category": "jailbreak",
+    "threat_category": "JAILBREAK",
+    "patterns": [
+      "(?i)(?:disable|remove|turn\\s+off|deactivate|bypass)\\s+(?:all\\s+)?(?:safety|content|ethical|moderation|censorship)\\s+(?:filters?|restrictions?|guidelines?|guardrails?|limits?)",
+      "(?i)(?:without|no|free\\s+from)\\s+(?:any\\s+)?(?:restrictions?|limitations?|censorship|filters?|guardrails?|safety\\s+(?:measures?|protocols?))"
+    ]
+  },
+  {
+    "id": "ATR-2026-00006",
+    "title": "System Prompt Extraction",
+    "severity": "high",
+    "category": "system-prompt",
+    "threat_category": "SYSTEM PROMPT EXTRACTION",
+    "patterns": [
+      "(?i)(?:repeat|show|display|reveal|print|output|give\\s+me|what\\s+(?:is|are))\\s+(?:your\\s+)?(?:the\\s+)?(?:system|initial|original|hidden|secret|full|complete|entire)\\s+(?:prompt|instructions|message|directive|rules)",
+      "(?i)(?:what|tell\\s+me)\\s+(?:were|are)\\s+(?:your|the)\\s+(?:original|initial|system|first|secret)\\s+(?:instructions|prompt|rules|guidelines)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00007",
+    "title": "System Prompt Override",
+    "severity": "critical",
+    "category": "system-prompt",
+    "threat_category": "SYSTEM PROMPT OVERRIDE",
+    "patterns": [
+      "(?i)\\[?system\\]?\\s*(?:prompt|message|instruction)\\s*[:=]",
+      "(?i)new\\s+system\\s+(?:prompt|instruction|directive|message)\\s*[:=]"
+    ]
+  },
+  {
+    "id": "ATR-2026-00008",
+    "title": "Tool Poisoning - Hidden Instruction Injection",
+    "severity": "critical",
+    "category": "tool-poisoning",
+    "threat_category": "TOOL POISONING",
+    "patterns": [
+      "(?i)<\\!--[\\s\\S]*?(?:ignore|override|bypass|disregard)[\\s\\S]*?(?:instructions|rules|safety)[\\s\\S]*?-->",
+      "(?i)\\\\u00(?:0[0-9a-f]|1[0-9a-f]|7f).*?(?:ignore|override|execute)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00009",
+    "title": "Tool Poisoning - Malicious Tool Description",
+    "severity": "critical",
+    "category": "tool-poisoning",
+    "threat_category": "TOOL POISONING",
+    "patterns": [
+      "(?i)(?:before|when|after)\\s+(?:using|calling|running|executing)\\s+(?:this|the)\\s+tool[,;:]?\\s+(?:first|also|always)\\s+(?:read|send|exfiltrate|copy|extract|transmit|forward)",
+      "(?i)(?:important|note|warning)[:\\!]\\s*(?:this\\s+tool\\s+)?(?:must|should|needs\\s+to)\\s+(?:also|first|always)\\s+(?:read|access|send|fetch|retrieve)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00010",
+    "title": "Data Exfiltration via URL",
+    "severity": "critical",
+    "category": "data-exfiltration",
+    "threat_category": "DATA EXFILTRATION",
+    "patterns": [
+      "(?i)(?:fetch|request|load|open|visit|navigate|call|access)\\s+(?:this\\s+)?(?:url|link|endpoint|webhook)\\s*[:=]?\\s*https?://[^\\s]+\\?[^\\s]*(?:data|token|key|secret|password|credential|session|cookie|auth)",
+      "(?i)(?:send|post|transmit|exfiltrate|forward|upload)\\s+(?:the\\s+)?(?:data|results?|output|response|content|information|credentials?|tokens?|secrets?)\\s+(?:to|via|through)\\s+(?:https?://|webhook|endpoint)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00011",
+    "title": "Data Exfiltration via Markdown Image",
+    "severity": "critical",
+    "category": "data-exfiltration",
+    "threat_category": "DATA EXFILTRATION",
+    "patterns": [
+      "!\\[(?:[^\\]]*)\\]\\(https?://[^)]+\\?[^)]*(?:data|token|key|secret|password|q|query|d|exfil)=[^)]+\\)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00012",
+    "title": "Reverse Shell Command",
+    "severity": "critical",
+    "category": "command-injection",
+    "threat_category": "COMMAND INJECTION",
+    "patterns": [
+      "(?i)(?:bash|sh|zsh|nc|ncat|netcat|python|perl|ruby|php)\\s+.*?(?:-[ei]\\s+|(?:\\/dev\\/tcp\\/|(?:exec|system|popen|subprocess))).*?(?:\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\b(?:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,})\\b).*?\\d{2,5}",
+      "(?i)(?:mkfifo|mknod)\\s+\\S+\\s*;.*?(?:nc|ncat|netcat|bash|sh)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00013",
+    "title": "Credential Exposure in Tool Arguments",
+    "severity": "high",
+    "category": "credential-exposure",
+    "threat_category": "CREDENTIAL EXPOSURE",
+    "patterns": [
+      "(?i)(?:api[_-]?key|api[_-]?secret|access[_-]?token|auth[_-]?token|bearer|password|passwd|secret[_-]?key|private[_-]?key|client[_-]?secret)\\s*[:=]\\s*['\"]?(?:[A-Za-z0-9+/=_-]{20,})['\"]?",
+      "(?i)(?:sk|pk|ak|rk)[-_](?:live|test|prod)[-_][A-Za-z0-9]{20,}"
+    ]
+  },
+  {
+    "id": "ATR-2026-00014",
+    "title": "Privilege Escalation via Tool Chaining",
+    "severity": "high",
+    "category": "privilege-escalation",
+    "threat_category": "PRIVILEGE ESCALATION",
+    "patterns": [
+      "(?i)(?:use|call|invoke|chain|run)\\s+(?:the\\s+)?(?:admin|root|sudo|elevated|privileged)\\s+(?:tool|function|endpoint|command|api)",
+      "(?i)(?:escalate|elevate|upgrade|grant)\\s+(?:my|your|the|user)?\\s*(?:privileges?|permissions?|access|role)\\s+(?:to|as)\\s+(?:admin|root|superuser|owner)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00015",
+    "title": "Cross-Agent Prompt Injection",
+    "severity": "critical",
+    "category": "cross-agent",
+    "threat_category": "CROSS-AGENT ATTACK",
+    "patterns": [
+      "(?i)(?:tell|instruct|command|ask|request|direct)\\s+(?:the\\s+)?(?:other|next|downstream|receiving|target)\\s+(?:agent|model|assistant|AI|LLM|bot)\\s+(?:to|that\\s+it\\s+(?:should|must))",
+      "(?i)(?:when|if)\\s+(?:the\\s+)?(?:other|next|downstream)\\s+(?:agent|model|AI)\\s+(?:reads?|processes?|receives?)\\s+this[,;:]?\\s+(?:it\\s+should|make\\s+it|have\\s+it|tell\\s+it\\s+to)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00016",
+    "title": "Hidden Instructions via Encoding",
+    "severity": "high",
+    "category": "hidden-instructions",
+    "threat_category": "STEGANOGRAPHIC INJECTION",
+    "patterns": [
+      "(?i)(?:\\\\x[0-9a-f]{2}){4,}",
+      "(?i)(?:\\\\u[0-9a-f]{4}){3,}",
+      "(?i)(?:%[0-9a-f]{2}){6,}"
+    ]
+  },
+  {
+    "id": "ATR-2026-00017",
+    "title": "Social Engineering - Urgency Manipulation",
+    "severity": "medium",
+    "category": "social-engineering",
+    "threat_category": "SOCIAL ENGINEERING",
+    "patterns": [
+      "(?i)(?:this\\s+is\\s+(?:an\\s+)?(?:urgent|emergency|critical|life[- ]threatening)|(?:people|someone|lives?)\\s+(?:will|could|might)\\s+(?:die|be\\s+(?:hurt|harmed|in\\s+danger))|(?:urgent|immediate)(?:ly)?[:\\!]?\\s+(?:bypass|ignore|skip|override|disable))"
+    ]
+  },
+  {
+    "id": "ATR-2026-00018",
+    "title": "Path Traversal in Tool Arguments",
+    "severity": "high",
+    "category": "path-traversal",
+    "threat_category": "PATH TRAVERSAL",
+    "patterns": [
+      "(?:(?:\\.\\.[\\/\\\\]){2,})",
+      "(?i)(?:\\/etc\\/(?:passwd|shadow|hosts|sudoers)|(?:~|\\/(?:home|root))\\/\\.(?:ssh|aws|gnupg|env)|\\/proc\\/self\\/)"
+    ]
+  },
+  {
+    "id": "ATR-2026-00019",
+    "title": "Code Injection in Tool Input",
+    "severity": "critical",
+    "category": "code-injection",
+    "threat_category": "CODE INJECTION",
+    "patterns": [
+      "(?i)(?:exec|eval|compile|__import__)\\s*\\(",
+      "(?i)(?:os\\.(?:system|popen|exec[lv]?[pe]?)|subprocess\\.(?:run|call|Popen|check_output))\\s*\\(",
+      "(?i)(?:child_process|require\\s*\\(\\s*['\"]child_process['\"]\\))"
+    ]
+  },
+  {
+    "id": "ATR-2026-00020",
+    "title": "Base64 Encoded Payload",
+    "severity": "medium",
+    "category": "encoded-payload",
+    "threat_category": "OBFUSCATED PAYLOAD",
+    "patterns": [
+      "(?i)(?:echo|printf|print)\\s+['\"]?(?:[A-Za-z0-9+/]{40,}={0,2})['\"]?\\s*\\|\\s*(?:base64\\s+(?:-d|--decode)|openssl\\s+(?:enc\\s+)?-base64\\s+-d)",
+      "(?i)(?:atob|base64\\.(?:b64)?decode|Base64\\.decode|decode\\(.['\"]base64['\"])\\s*\\(\\s*['\"](?:[A-Za-z0-9+/]{40,}={0,2})['\"]"
+    ]
+  }
+]

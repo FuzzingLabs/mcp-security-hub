@@ -100,6 +100,10 @@
         "-v", "/path/to/code:/app/target:ro",
         "semgrep-mcp:latest"
       ]
+    },
+    "atr": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "atr-mcp:latest"]
     }
   }
 }
