@@ -86,7 +86,7 @@ def load_rules(rules_path: Path) -> list[ATRRule]:
         rules = [ATRRule(**entry) for entry in raw]
         logger.info(f"Loaded {len(rules)} ATR rules from {rules_path}")
         return rules
-    except (json.JSONDecodeError, Exception) as exc:
+    except Exception as exc:
         logger.exception(f"Failed to load rules: {exc}")
         return []
 
@@ -105,19 +105,40 @@ def compile_patterns(rules: list[ATRRule]) -> dict[str, list[re.Pattern[str]]]:
     return compiled
 
 
+# Rules that produce high false-positive rates when scanning SKILL.md content.
+# These are excluded when context="skill" to reduce noise.
+SKILL_CONTEXT_DENYLIST: set[str] = {
+    "ATR-2026-00006",  # System Prompt Extraction — common in skill docs
+    "ATR-2026-00016",  # Hidden Instructions via Encoding — hex/unicode in docs
+    "ATR-2026-00017",  # Social Engineering - Urgency — common phrasing in docs
+    "ATR-2026-00020",  # Base64 Encoded Payload — base64 examples in docs
+}
+
+
 def scan_text_against_rules(
     text: str,
     rules: list[ATRRule],
     compiled: dict[str, list[re.Pattern[str]]],
     context: str = "general",
 ) -> ScanResult:
-    """Scan text against all ATR rules and return findings."""
-    findings: list[Finding] = []
+    """Scan text against all ATR rules and return findings.
 
-    for rule in rules:
+    When context is "skill", rules in SKILL_CONTEXT_DENYLIST are skipped
+    to reduce false positives on SKILL.md content.
+    """
+    findings: list[Finding] = []
+    seen_rule_ids: set[str] = set()
+
+    applicable_rules = rules
+    if context == "skill":
+        applicable_rules = [r for r in rules if r.id not in SKILL_CONTEXT_DENYLIST]
+
+    for rule in applicable_rules:
         patterns = compiled.get(rule.id, [])
         for pattern in patterns:
-            for match in pattern.finditer(text):
+            match = pattern.search(text)
+            if match and rule.id not in seen_rule_ids:
+                seen_rule_ids.add(rule.id)
                 matched_text = match.group(0)
                 # Truncate long matches for readability
                 display_text = matched_text[:200] + "..." if len(matched_text) > 200 else matched_text
@@ -137,7 +158,7 @@ def scan_text_against_rules(
         text_length=len(text),
         context=context,
         findings=findings,
-        rules_evaluated=len(rules),
+        rules_evaluated=len(applicable_rules),
         threat_detected=len(findings) > 0,
     )
 
@@ -175,8 +196,8 @@ async def list_tools() -> list[Tool]:
                     "context": {
                         "type": "string",
                         "description": "Scan context: 'mcp' for MCP tool descriptions, "
-                        "'skill' for SKILL.md content, or omit for general scanning",
-                        "enum": ["mcp", "skill", "general"],
+                        "'skill' for SKILL.md content (excludes high-FP rules), "
+                        "or any other value for general scanning",
                         "default": "general",
                     },
                 },
@@ -282,19 +303,19 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             for server_name, server_config in servers.items():
                 config_result.tools_scanned += 1
 
-                # Scan the full server config as text
-                scannable_text = json.dumps(server_config, indent=2)
-
-                # Also extract args (command-line arguments often contain payloads)
-                args_list = server_config.get("args", [])
-                if isinstance(args_list, list):
-                    scannable_text += "\n" + " ".join(str(a) for a in args_list)
-
-                # Extract env vars
-                env_vars = server_config.get("env", {})
+                # Build scannable text from command + args (not env values,
+                # which are secrets and would trigger credential-exposure FPs).
+                # json.dumps already includes args/env, so we only scan a
+                # config copy with env values redacted.
+                config_for_scan = dict(server_config)
+                env_vars = config_for_scan.get("env", {})
                 if isinstance(env_vars, dict):
-                    for key, val in env_vars.items():
-                        scannable_text += f"\n{key}={val}"
+                    # Only keep env var names for scanning, redact values
+                    config_for_scan["env"] = {
+                        k: "REDACTED" for k in env_vars
+                    }
+
+                scannable_text = json.dumps(config_for_scan, indent=2)
 
                 scan = scan_text_against_rules(
                     scannable_text, RULES, COMPILED_PATTERNS, "mcp"

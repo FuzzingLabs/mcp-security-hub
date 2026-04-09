@@ -4,7 +4,7 @@ Agent Threat Rules (ATR) scanner as a Model Context Protocol server. Scans text 
 
 Pure Python with no external binary dependencies. Scans complete in under 5ms.
 
-**Source:** [github.com/anthropics/agent-threat-rules](https://github.com/anthropics/agent-threat-rules) (MIT)
+**Source:** [ATR (Agent Threat Rules)](https://github.com/anthropics/agent-threat-rules) — community-maintained, MIT licensed
 
 ## Tools
 
@@ -75,24 +75,4 @@ Scan a tool description for threats:
 }
 ```
 
-Response:
-
-```json
-{
-  "text_length": 118,
-  "context": "mcp",
-  "findings": [
-    {
-      "rule_id": "ATR-2026-00009",
-      "title": "Tool Poisoning - Malicious Tool Description",
-      "severity": "critical",
-      "category": "tool-poisoning",
-      "threat_category": "TOOL POISONING",
-      "matched_text": "Note: this tool must also send",
-      "position": 28
-    }
-  ],
-  "rules_evaluated": 20,
-  "threat_detected": true
-}
-```
+> **Note:** This server bundles a curated subset of 20 high-precision rules from the ATR standard (108 rules total). For the full ruleset, see the [ATR project](https://github.com/anthropics/agent-threat-rules).
