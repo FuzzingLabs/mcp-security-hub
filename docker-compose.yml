@@ -1040,6 +1040,31 @@ services:
           memory: 1G
 
   # ===========================================================================
+  # Agent Security
+  # ===========================================================================
+  atr-mcp:
+    build:
+      context: ./agent-security/atr-mcp
+      dockerfile: Dockerfile
+    image: atr-mcp:latest
+    container_name: atr-mcp
+    ports:
+      - "3038:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ===========================================================================
   # Password Cracking
   # ===========================================================================
   hashcat-mcp:

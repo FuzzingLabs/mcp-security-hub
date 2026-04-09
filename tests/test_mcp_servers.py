@@ -37,6 +37,7 @@ MCP_SERVERS = [
     ("fuzzing", "boofuzz-mcp"),
     ("fuzzing", "dharma-mcp"),
     ("secrets", "gitleaks-mcp"),
+    ("agent-security", "atr-mcp"),
 ]
 
 # MCP servers that wrap external implementations (Dockerfile only, no server.py)
