@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/fuzzinglabs-mcp-security-hub-badge.png)](https://mseep.ai/app/fuzzinglabs-mcp-security-hub)
+
 # Offensive Security MCP Servers
 
 [![Build Status](https://github.com/FuzzingLabs/mcp-security-hub/actions/workflows/build.yml/badge.svg)](https://github.com/FuzzingLabs/mcp-security-hub/actions/workflows/build.yml)
