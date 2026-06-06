@@ -117,6 +117,7 @@ For project-level config, copy `.mcp.json` to your project root. See [examples/]
 | [daml-viewer-mcp](./blockchain/daml-viewer-mcp) | 1 | DAML access-control table generation and run tracking |
 | [medusa-mcp](./blockchain/medusa-mcp) | 4 | High-performance smart contract fuzzer for Solidity |
 | [solazy-mcp](./blockchain/solazy-mcp) | 8 | Solana sBPF static analysis and reverse engineering |
+| [TWZRD Agent Intel](https://intel.twzrd.xyz) | 4 | Agent trust scoring and x402 micropayment verification for Solana — score agents, verify trust receipts, preflight checks |
 
 ### Cloud Security (3 servers)
 
