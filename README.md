@@ -349,6 +349,7 @@ Contributions welcome! To add a new MCP server:
 ## Acknowledgments
 
 - [Model Context Protocol](https://modelcontextprotocol.io/) - Protocol specification
+- [Darkmoon](https://github.com/ASCIT31/Dark-Moon) - Open source (GPL-3.0) autonomous AI penetration testing platform and MCP host covering web, API, Active Directory and Kubernetes, with proof of exploitation.
 - [awesome-mcp-security](https://github.com/Puliczek/awesome-mcp-security) - MCP security catalog
 - Upstream tool maintainers: nmap, nuclei, radare2, sqlmap, and all others
 
